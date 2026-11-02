@@ -2,6 +2,8 @@
 
 A private, mobile-first Advent calendar for 24 printed chocolate-door QR codes. React, TypeScript, Vite, Tailwind, React Router, Fastify, and SQLite run from one application container. No accounts, cloud services, analytics, external fonts, or public private-media directory.
 
+The calendar opens directly onto an illustrated blue winter house with 24 numbered doors. A successful QR scan still redirects to the clean `/day/:day` route: the frontend first shows the whole house, waits for server authorization, opens that specific door, then enters the day's content. Previously unlocked doors glow and can be revisited from the house. Each content page has “Back to the house” navigation. Locked/future/invalid states appear over the house without opening a door or displaying private content. Reduced-motion preferences skip the animation and enter authorized content immediately. All illustration assets are local SVG/CSS; no external design service is required at runtime.
+
 ## Quick start
 
 Use Node.js 24 LTS and npm. From this directory:
@@ -43,7 +45,7 @@ Initialization copies 24 editable placeholders into `private/content` only where
 src/                 React UI and responsive styles (public)
 server/              configuration, schema, authentication, protected routes
 scripts/manage.ts    initialization, QR generation, revocation, backups
-tests/               backend security tests
+tests/               backend security, deployment, and house-interaction tests
 content-examples/    harmless, committed placeholders for all 24 days
 private/content/     your edited JSON, ignored by Git and Docker context
 private/media/01/    private media for day 1 (through 24)
