@@ -8,3 +8,5 @@ generated-private
 backups
 coverage
 *.sqlite*
+.deploy.lock
+.githooks

@@ -13,5 +13,6 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run check
+      - run: bash -n scripts/deploy.sh scripts/update.sh scripts/install-deploy-hook.sh .githooks/post-merge
       - run: npm test
       - run: docker build -t private-advent:test .

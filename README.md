@@ -180,7 +180,7 @@ Run the same `docker compose build`, initialization, QR generation, and `up -d` 
 
 Keep `TRUST_PROXY` empty initially: the authentication limit then aggregates at the tunnel container's IP. If per-client limits are needed, configure only the verified proxy IP/CIDR; do not trust arbitrary `CF-Connecting-IP` headers from directly reachable clients.
 
-For this hostname, create a Cloudflare Cache Rule with cache eligibility **Bypass cache**, and ensure no conflicting cache-everything rule or Worker overrides it. Disable optional analytics/session recording for the calendar and avoid raw request-URL logging or debug logging in the tunnel, Workers, and log exports. Cloudflare terminates public TLS and can therefore see the QR credentials and private responses: this deployment uses your chosen Cloudflare infrastructure and is not end-to-end encrypted from browser to the application. Browser/scanner history can also retain QR URLs.
+The application sends `Cache-Control: no-store` for private responses; Origin Cache Control is enabled by default on Cloudflare Free, Pro, and Business plans. No Enterprise upgrade is needed. An optional hostname Cache Rule with cache eligibility **Bypass cache** is also available on Free. Ensure no conflicting rule or Worker overrides the private response headers. Disable optional analytics/session recording for the calendar and avoid raw request-URL logging or debug logging in the tunnel, Workers, and log exports. Cloudflare terminates public TLS and can therefore see the QR credentials and private responses: this deployment uses your chosen Cloudflare infrastructure and is not end-to-end encrypted from browser to the application. Browser/scanner history can also retain QR URLs.
 
 Check the container with `docker compose ps` and the public endpoint with `curl -fsS https://YOUR-CALENDAR-HOST/health`. The host-loopback curl command from the default deployment does not apply to this configuration. Copy generated assets and private content using the same `docker compose cp` commands above. Set the permanent HTTPS hostname before generating the final codes, using the same production database.
 
@@ -195,6 +195,50 @@ If NPM is a container, its `127.0.0.1` is not the host. Connect `advent` to the 
 For NPM, disable access logging for this host/location (`access_log off;`) and ensure custom/global logs and error collectors do not retain request URIs. Nginx error logs may include original request URLs; use `error_log /dev/null crit;` for this dedicated vhost if you cannot reliably redact them. NPM versions/templates vary: inspect `nginx -T` to verify the **effective** server and location configuration, including generated error log directives. Back up the proxy config before changes. Do not add duplicate conflicting directives blindly in the Advanced field. Verify with an innocuous fake `/open/01/TEST` request and inspect log destinations. The app's safe logging does not protect upstream proxy logs.
 
 Set `TRUST_PROXY` to the actual immediate proxy IP or dedicated network CIDR if you want rate limits per device. Never trust all internet addresses; ensure clients cannot connect directly to the app port. With no proxy trust, limits aggregate by proxy IP, which is secure but may throttle two devices together. HTTPS security comes from production configuration, not an untrusted forwarded protocol header. Preserve the Host and forwarded client-IP headers at the proxy.
+
+## Updating an existing server deployment
+
+Code updates do not replace the named volumes. Your database (including keys, sessions, and grants), private content/media, generated QR files, and backups survive container replacement. Keep using the same checkout directory, Compose project name, and volume configuration. Do not regenerate keys, remove volumes, or run initialization/QR generation for ordinary code updates. New committed placeholder examples do not overwrite your private messages. New environment variables or incompatible schema changes may still require release-specific instructions.
+
+On Ubuntu, after pushing changes from your development machine, run:
+
+```sh
+cd ~/homeserver/adventcalendar
+bash scripts/update.sh
+```
+
+No host Node/npm installation is needed. The wrapper refuses tracked local changes, performs `git pull --ff-only`, and deploys even if Git reports no new commits (useful after a failed build). It respects `COMPOSE_FILE` in your `.env`, including the Cloudflare configuration. Docker permissions, Bash, `flock` (Ubuntu's `util-linux`), and a current Docker Compose plugin supporting `up --wait --wait-timeout` are required.
+
+Deployment validates Compose settings and acquires a lock, builds the image while the old container keeps serving, creates an online SQLite backup using the running container, then runs `compose up` with `--no-build --remove-orphans --wait`. The new container must pass its health check within 180 seconds; override with an exported `ADVENT_DEPLOY_TIMEOUT` in seconds if needed. Container replacement causes a brief interruption; it is not a zero-downtime deployment. Initial setup must be completed before using the update script. Avoid concurrent pulls, manual Compose operations, or content/key changes during deployment.
+
+Build or backup failures abort before replacement. Health-check failures produce an explicit error and retain the previous image and all volumes, but **do not automatically roll back the checkout, container, or database**. Fix the reported issue and rerun `bash scripts/deploy.sh` (without another pull), or use the backup/restore procedure for an incompatible schema change. Do not assume that old code can read a newer database schema.
+
+Only containers belonging to this Compose project and no longer defined in its configuration are removed as orphans. Use a dedicated project name; never reuse another application's `COMPOSE_PROJECT_NAME`. After successful deployment, the script tries to remove only the exact previous calendar image ID, without forcing removal. If another tag/container still references it, it stays. There is no global `docker system prune`, image prune, build-cache purge, volume removal, or modification to Cloudflare/Nextcloud/other projects. Build cache and accumulated backups are deliberately retained; manage those separately according to your backup policy.
+
+### Optional: deploy automatically after `git pull`
+
+Install this only in the **server checkout**, not on the development computer:
+
+```sh
+cd ~/homeserver/adventcalendar
+bash scripts/install-deploy-hook.sh
+```
+
+The installer creates a local executable Git hook that calls the tracked `.githooks/post-merge` template, and sets repository-local pulls to fast-forward only with rebase disabled. Tracked file modes stay unchanged, so installation does not dirty the checkout. Other default Git hooks remain active. It refuses to overwrite an existing custom post-merge hook or configured hooks directory. From then on:
+
+```sh
+git pull
+```
+
+A pull that fast-forwards/merges new commits triggers the deployment. An unchanged pull does not trigger Git's post-merge hook; use `bash scripts/update.sh` for retries or a guaranteed rebuild. The hook also runs after manual merges; avoid manually merging unreviewed code on the deployment checkout. The update wrapper suppresses the hook to prevent double deployment. Git hooks are local configuration and are not activated merely by cloning or pulling the repository.
+
+A post-merge error cannot undo the completed Git update, and Git may still report a successful pull; check the hook's **AUTO-DEPLOY FAILED** message and deployment result. Only pull trusted code, since the opt-in hook executes it with your user's Docker permissions. To disable the optional hook:
+
+```sh
+bash scripts/install-deploy-hook.sh --disable
+```
+
+This leaves the fast-forward-only Git pull settings in place. To reset those too, unset the local `pull.ff` and `pull.rebase` settings. No host-level Git settings are modified. You can always use `bash scripts/deploy.sh` to rebuild/deploy the currently checked-out code without pulling.
 
 ## Backup and restore
 

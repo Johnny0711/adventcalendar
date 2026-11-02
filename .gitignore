@@ -8,3 +8,4 @@ backups/
 coverage/
 *.sqlite*
 *.log
+.deploy.lock

@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+[[ ${ADVENT_SKIP_POST_MERGE:-0} == 1 ]] && exit 0
+root=$(git rev-parse --show-toplevel)
+printf 'Server post-merge hook: deploying the updated Advent calendar...\n'
+if ! bash "$root/scripts/deploy.sh"; then
+  printf 'AUTO-DEPLOY FAILED: Git has updated, but the deployment did not complete. Run bash scripts/deploy.sh after fixing the error.\n' >&2
+  exit 1
+fi
