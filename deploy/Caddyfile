@@ -1,0 +1,6 @@
+# Caddy running on the HOST, next to the Docker deployment.
+# Set ADVENT_DOMAIN=advent.example.com in Caddy's environment.
+{$ADVENT_DOMAIN} {
+    # Do not enable access logging here: /open URLs are credentials.
+    reverse_proxy 127.0.0.1:3000
+}

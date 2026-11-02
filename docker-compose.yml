@@ -1,0 +1,30 @@
+services:
+  advent:
+    build: .
+    restart: unless-stopped
+    init: true
+    environment:
+      NODE_ENV: production
+      PUBLIC_ORIGIN: ${PUBLIC_ORIGIN:?Set an HTTPS origin in .env}
+      CALENDAR_YEAR: ${CALENDAR_YEAR:-2026}
+      TIMEZONE: ${TIMEZONE:-Europe/Bucharest}
+      DATE_LOCK: ${DATE_LOCK:-true}
+      SESSION_EXPIRES_AT: ${SESSION_EXPIRES_AT:-2027-02-01T00:00:00Z}
+      TRUST_PROXY: ${TRUST_PROXY:-}
+    ports:
+      - '127.0.0.1:3000:3000'
+    volumes:
+      - advent-data:/app/data
+      - advent-private:/app/private
+      - advent-generated:/app/generated-private
+      - advent-backups:/app/backups
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    read_only: true
+    tmpfs: [/tmp]
+volumes:
+  advent-data:
+  advent-private:
+  advent-generated:
+  advent-backups:

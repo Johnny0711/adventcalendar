@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.env
+data/
+private/
+generated-private/
+backups/
+coverage/
+*.sqlite*
+*.log

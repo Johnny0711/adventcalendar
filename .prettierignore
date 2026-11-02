@@ -1,0 +1,7 @@
+node_modules
+dist
+private
+generated-private
+data
+backups
+package-lock.json
