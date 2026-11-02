@@ -1,0 +1,38 @@
+# Select with COMPOSE_FILE=docker-compose.cloudflare.yml in .env.
+# TUNNEL_NETWORK must name an existing network of cloudflared-tunnel.
+services:
+  advent:
+    build: .
+    restart: unless-stopped
+    init: true
+    environment:
+      NODE_ENV: production
+      PUBLIC_ORIGIN: ${PUBLIC_ORIGIN:?Set an HTTPS origin in .env}
+      CALENDAR_YEAR: ${CALENDAR_YEAR:-2026}
+      TIMEZONE: ${TIMEZONE:-Europe/Bucharest}
+      DATE_LOCK: ${DATE_LOCK:-true}
+      SESSION_EXPIRES_AT: ${SESSION_EXPIRES_AT:-2027-02-01T00:00:00Z}
+      TRUST_PROXY: ${TRUST_PROXY:-}
+    networks:
+      tunnel:
+        aliases:
+          - advent-calendar
+    volumes:
+      - advent-data:/app/data
+      - advent-private:/app/private
+      - advent-generated:/app/generated-private
+      - advent-backups:/app/backups
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    read_only: true
+    tmpfs: [/tmp]
+networks:
+  tunnel:
+    external: true
+    name: ${TUNNEL_NETWORK:?Set the existing cloudflared Docker network in .env}
+volumes:
+  advent-data:
+  advent-private:
+  advent-generated:
+  advent-backups:

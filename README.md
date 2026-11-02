@@ -161,6 +161,29 @@ docker compose cp ./private/media/01/memory.webp advent:/app/private/media/01/me
 
 `compose cp` requires a created/running service container; run `up -d` first. Keep copied files private. Check ownership/readability as UID 1000 after copying; use `docker compose exec --user root advent chown -R node:node /app/private` if necessary. This changes container volume ownership, not host firewall or DNS. For initialization after a service exists, `docker compose exec advent node dist/scripts/manage.js init` also works. For production management use `node dist/scripts/manage.js COMMAND`, not npm's development `tsx` commands (dev dependencies are pruned).
 
+### Existing Cloudflare Tunnel (no published application port)
+
+Use `docker-compose.cloudflare.yml` instead of the default Compose file when `cloudflared` already runs in Docker. This configuration publishes no host port. Find the tunnel container's existing networks:
+
+```sh
+docker inspect cloudflared-tunnel --format '{{range $name, $_ := .NetworkSettings.Networks}}{{println $name}}{{end}}'
+```
+
+Choose an existing user-defined bridge network from that list (not Docker's built-in `bridge`, `host`, or `none`). Add these lines to `.env`, alongside the production settings:
+
+```dotenv
+COMPOSE_FILE=docker-compose.cloudflare.yml
+TUNNEL_NETWORK=replace-with-existing-tunnel-network
+```
+
+Run the same `docker compose build`, initialization, QR generation, and `up -d` commands above. Compose automatically selects the Cloudflare file through `COMPOSE_FILE`. In the existing tunnel's published application routes, add your calendar hostname (for example `advent.johnnyco.tech`) with service type **HTTP** and URL **advent-calendar:3000**. The full origin service is `http://advent-calendar:3000`; do not use `localhost`, which would refer to the tunnel container. Public access still uses `https://advent.johnnyco.tech`. No extra Caddy/Nginx container or router port forwarding is needed. Leave the other application routes unchanged. If the tunnel uses a local ingress configuration, add the same hostname/service mapping before its final catch-all route.
+
+Keep `TRUST_PROXY` empty initially: the authentication limit then aggregates at the tunnel container's IP. If per-client limits are needed, configure only the verified proxy IP/CIDR; do not trust arbitrary `CF-Connecting-IP` headers from directly reachable clients.
+
+For this hostname, create a Cloudflare Cache Rule with cache eligibility **Bypass cache**, and ensure no conflicting cache-everything rule or Worker overrides it. Disable optional analytics/session recording for the calendar and avoid raw request-URL logging or debug logging in the tunnel, Workers, and log exports. Cloudflare terminates public TLS and can therefore see the QR credentials and private responses: this deployment uses your chosen Cloudflare infrastructure and is not end-to-end encrypted from browser to the application. Browser/scanner history can also retain QR URLs.
+
+Check the container with `docker compose ps` and the public endpoint with `curl -fsS https://YOUR-CALENDAR-HOST/health`. The host-loopback curl command from the default deployment does not apply to this configuration. Copy generated assets and private content using the same `docker compose cp` commands above. Set the permanent HTTPS hostname before generating the final codes, using the same production database.
+
 ### Caddy
 
 `deploy/Caddyfile` assumes Caddy installed **on the host**. Supply `ADVENT_DOMAIN=advent.yourdomain.com` to the Caddy service environment, install the example site block, validate and reload Caddy. It proxies to `127.0.0.1:3000` and obtains certificates. Do not enable Caddy's `log` directive for this site. If a global logging configuration includes requests, exclude this site or redact the entire request URI, including error logs.
