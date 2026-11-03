@@ -111,6 +111,10 @@ describe('house calendar and protected door transitions', () => {
     await advance(DOOR_PAUSE_MS);
     expect(host.querySelectorAll('.is-opening')).toHaveLength(1);
     expect(door(1)?.classList.contains('is-opening')).toBe(true);
+    expect(host.querySelector('.door-journey')).not.toBeNull();
+    expect(host.querySelectorAll('.journey-door .door-shutter')).toHaveLength(
+      2,
+    );
     expect(host.textContent).not.toContain(content.title);
     await advance(DOOR_OPEN_MS);
     expect(host.querySelector('.house-scene')).toBeNull();
@@ -143,6 +147,7 @@ describe('house calendar and protected door transitions', () => {
       await advance(5000);
       expect(host.querySelectorAll('.house-door')).toHaveLength(24);
       expect(host.querySelector('.is-opening')).toBeNull();
+      expect(host.querySelector('.door-journey')).toBeNull();
       expect(host.textContent).toContain(expected);
       expect(host.textContent).not.toContain(content.title);
       expect(host.querySelector('.day-page')).toBeNull();
@@ -153,6 +158,38 @@ describe('house calendar and protected door transitions', () => {
       expect(host.querySelector('.notice-layer')).toBeNull();
     });
   }
+  it('brings the authorized door into view and restores it when returning home', async () => {
+    const previous = Object.getOwnPropertyDescriptor(
+      Element.prototype,
+      'scrollIntoView',
+    );
+    const scroll = vi.fn();
+    Object.defineProperty(Element.prototype, 'scrollIntoView', {
+      configurable: true,
+      value: scroll,
+    });
+    try {
+      await render('/day/1');
+      expect(scroll).toHaveBeenCalledWith({
+        block: 'center',
+        behavior: 'instant',
+      });
+      expect(
+        (scroll.mock.contexts[0] as Element).getAttribute('data-day'),
+      ).toBe('1');
+      await advance(DOOR_PAUSE_MS + DOOR_OPEN_MS);
+      scroll.mockClear();
+      await click('.inside-topbar .back-to-house');
+      expect(scroll).toHaveBeenCalledTimes(1);
+      expect(
+        (scroll.mock.contexts[0] as Element).getAttribute('data-day'),
+      ).toBe('1');
+    } finally {
+      if (previous)
+        Object.defineProperty(Element.prototype, 'scrollIntoView', previous);
+      else Reflect.deleteProperty(Element.prototype, 'scrollIntoView');
+    }
+  });
   it('honors reduced motion by skipping the door and room animations', async () => {
     vi.stubGlobal(
       'matchMedia',

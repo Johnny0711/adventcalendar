@@ -8,12 +8,12 @@
 
 :root {
   font-family: 'Trebuchet MS', Arial, sans-serif;
-  color: #edf3f9;
-  background: #12345b;
+  color: #315e86;
+  background: #f4f8fc;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
-  color-scheme: dark;
+  color-scheme: light;
 }
 * {
   box-sizing: border-box;
@@ -36,7 +36,7 @@ button {
 }
 button:focus-visible,
 a:focus-visible {
-  outline: 3px solid #f1d79d;
+  outline: 3px solid #315e86;
   outline-offset: 5px;
 }
 h1,
@@ -116,11 +116,15 @@ h2 {
   margin: 0 auto;
 }
 .house-roof {
+  overflow: visible;
   display: block;
   width: calc(100% + 14px);
   max-width: none;
   margin: 0 -7px -1px;
   color: var(--ink);
+}
+.chimney-wisp {
+  opacity: 0.4;
 }
 .house-facade {
   position: relative;
@@ -264,9 +268,6 @@ h2 {
 .house-door--unlocked {
   --paper: #ccdef0;
   color: #204e78;
-}
-.house-door--unlocked .door-leaf {
-  background: #ccdef0;
 }
 .house-door--unlocked::after {
   content: '';
@@ -436,81 +437,116 @@ h2 {
   color: inherit;
 }
 
-/* A softly lit room behind each door. */
+/* The rooms use the same ink, paper, arches and quiet little details as the house. */
 .inside-scene {
   min-height: 100svh;
-  background: radial-gradient(ellipse at 50% 0, #284f75, #12345b 70%);
-  padding: max(24px, env(safe-area-inset-top)) 22px
-    max(45px, env(safe-area-inset-bottom));
+  color: #315e86;
+  padding: max(14px, env(safe-area-inset-top)) 18px
+    max(36px, env(safe-area-inset-bottom));
+  background:
+    radial-gradient(circle at 1px 1px, #315e860b 1px, transparent 0) 0 0 / 7px
+      7px,
+    #f4f8fc;
 }
 .inside-topbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 1000px;
-  margin: 0 auto 38px;
-  gap: 20px;
+  max-width: 620px;
+  margin: 0 auto 20px;
+  gap: 16px;
 }
 .inside-topbar > span {
   font-family: Georgia, serif;
   font-style: italic;
-  font-size: 13px;
-  color: #bed0e0;
+  font-size: 12px;
+  color: #54799a;
 }
 .back-to-house {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 9px;
-  font-size: 12px;
-  color: #e3d4b2;
-  padding: 10px 0;
+  gap: 8px;
   min-height: 44px;
+  padding: 10px 4px;
+  color: #315e86;
+  font-size: 12px;
   text-underline-offset: 5px;
+  touch-action: manipulation;
 }
 .back-to-house:hover {
   text-decoration: underline;
 }
 .day-page {
-  max-width: 660px;
+  position: relative;
+  max-width: 580px;
   margin: auto;
   text-align: center;
-  padding: 0 0 30px;
+  padding: 28px clamp(18px, 5vw, 38px) 22px;
+  border: 1px solid #7194b3;
+  border-radius: 110px 110px 5px 5px / 38px 38px 5px 5px;
+  background: #e9f3fc;
+  box-shadow:
+    0 5px 0 #f4f8fc,
+    0 6px 0 #7194b3,
+    0 15px 35px #315e8609;
+}
+.day-page::before {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border: 1px solid #7194b34d;
+  border-radius: inherit;
+  pointer-events: none;
+}
+.room-heading {
+  position: relative;
 }
 .day-dateline {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 18px;
-  font-size: 10px;
-  letter-spacing: 3px;
-  color: #c5d6e5;
+  gap: 12px;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: #54799a;
 }
 .day-dateline > span {
-  width: 28px;
+  width: 20px;
   height: 1px;
-  background: #8eacbf80;
+  background: #7194b3;
 }
 .day-badge {
-  width: 60px;
-  height: 72px;
+  position: relative;
+  width: 52px;
+  height: 64px;
   display: grid;
   place-items: center;
-  margin: 25px auto 24px;
-  border: 1px solid #b6cee1;
-  border-radius: 28px 28px 3px 3px;
-  background: #426689;
+  margin: 22px auto 22px;
+  border: 1px solid #315e86;
+  border-radius: 45% 45% 0 0 / 20% 20% 0 0;
+  background: #d9e9f7;
+  color: #315e86;
   font-family: Georgia, serif;
-  color: #f3dfb7;
-  font-size: 28px;
-  box-shadow: 0 5px 0 #0d2c4b;
+  font-size: 26px;
+  box-shadow:
+    0 3px 0 #e9f3fc,
+    0 4px 0 #315e86;
+}
+.day-badge::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px solid #7194b3;
+  border-radius: inherit;
 }
 .day-page h1 {
-  font-size: clamp(35px, 7vw, 54px);
-  letter-spacing: -1.2px;
-  line-height: 1.15;
-  color: #f1f5f9;
+  font-size: clamp(30px, 8vw, 44px);
+  letter-spacing: -0.8px;
+  line-height: 1.18;
+  color: #284f73;
   overflow-wrap: anywhere;
+  text-wrap: balance;
 }
 .day-page h1:focus,
 .notice-card h2:focus {
@@ -518,142 +554,447 @@ h2 {
 }
 .content-star {
   display: block;
-  margin: 20px 0 28px;
-  color: #e3c999;
-  font-size: 25px;
+  margin: 15px 0 0;
+  color: #7598b4;
+  font-size: 22px;
+}
+.room-illustration {
+  display: block;
+  width: min(100%, 360px);
+  height: auto;
+  margin: 2px auto 18px;
+  color: #527b9e;
 }
 .blocks {
+  position: relative;
   text-align: left;
-  font-size: 16px;
-  line-height: 1.9;
+  font-size: 15px;
+  line-height: 1.85;
   overflow-wrap: anywhere;
+}
+.blocks > :first-child {
+  margin-top: 0;
 }
 .message {
   white-space: pre-wrap;
-  padding: 8px 0 20px;
+  padding: 10px 3px 22px;
 }
 .letter {
-  color-scheme: light;
-  background: #f3f5f3;
-  color: #29465d;
-  border: 1px solid #d9e3e8;
-  border-radius: 4px 4px 12px 12px;
-  box-shadow: 0 12px 40px #061a3033;
-  padding: clamp(25px, 6vw, 44px);
+  position: relative;
+  margin: 25px 0;
+  padding: 48px clamp(19px, 5vw, 32px) 27px;
+  border: 1px solid #92aec5;
+  background: #fafcfe;
+  border-radius: 3px 3px 11px 3px;
+  box-shadow: 3px 4px 0 #d7e7f4;
   font-family: Georgia, serif;
-  font-size: 19px;
+  font-size: 17px;
   line-height: 1.95;
+  color: #365b7b;
+}
+.letter::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  height: 19px;
+  border-top: 1px solid #a2bdd3;
+  border-bottom: 1px solid #a2bdd34d;
+}
+.letter-copy {
   white-space: pre-wrap;
 }
-.blocks figure,
-.quiz {
-  margin: 26px 0;
+.letter-seal {
+  position: absolute;
+  top: 13px;
+  left: calc(50% - 15px);
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #7194b3;
+  border-radius: 50%;
+  background: #e0edf8;
+  font-size: 21px;
+  line-height: 1;
+  transform: rotate(-10deg);
+}
+.blocks figure {
+  margin: 24px 0;
+  padding: 8px 8px 12px;
+  border: 1px solid #92aec5;
+  border-radius: 3px;
+  background: #fafcfe;
+  box-shadow: 2px 3px 0 #d7e7f4;
 }
 .blocks img,
 .blocks video {
   display: block;
   width: 100%;
-  max-height: 75svh;
+  max-height: 70svh;
   object-fit: contain;
-  border-radius: 10px;
-  background: #102d4d;
+  border-radius: 2px;
+  background: #dcebf7;
 }
 .blocks audio {
+  display: block;
   width: 100%;
+  min-width: 0;
+  accent-color: #315e86;
 }
 figcaption {
+  font-family: Georgia, serif;
+  font-style: italic;
   font-size: 12px;
-  color: #bfd0df;
-  margin-top: 9px;
+  color: #54799a;
+  margin: 9px 3px 0;
   text-align: center;
   line-height: 1.6;
 }
 .quiz {
-  padding: 25px;
-  border: 1px solid #547593;
-  background: #25496b;
-  border-radius: 12px;
+  margin: 26px 0;
+  padding: 23px 18px 18px;
+  border: 1px solid #7194b3;
+  border-radius: 28px 28px 3px 3px;
+  background: #dcebf7;
+}
+.quiz-eyebrow {
+  display: block;
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 8px;
+  letter-spacing: 1.6px;
+  margin-bottom: 12px;
+  color: #54799a;
 }
 .quiz h2 {
-  font-size: 26px;
-  line-height: 1.4;
+  text-align: center;
+  font-size: 25px;
+  line-height: 1.35;
+  text-wrap: balance;
 }
 .choices {
   display: grid;
   gap: 10px;
-  margin: 22px 0 12px;
+  margin: 20px 0 10px;
 }
 .choices button {
-  padding: 12px 16px;
+  padding: 13px 15px;
   min-height: 48px;
-  border: 1px solid #7593ae;
-  border-radius: 6px;
-  background: #345b7f;
-  color: #f0f5f9;
+  border: 1px solid #7194b3;
+  border-radius: 4px;
+  background: #f4f8fc;
+  color: #315e86;
   text-align: left;
+  touch-action: manipulation;
 }
 .choices button[aria-pressed='true'] {
-  color: #12345b;
-  border-color: #f1d79d;
-  background: #f1d79d;
+  color: #fff;
+  border-color: #315e86;
+  background: #315e86;
+}
+.quiz-feedback {
+  margin: 15px 0 0;
+  font-family: Georgia, serif;
+  font-style: italic;
+  text-align: center;
 }
 .signature {
   font-family: Georgia, serif;
   font-style: italic;
-  font-size: 17px;
-  color: #e3d4b2;
-  margin: 36px 0 20px;
+  font-size: 16px;
+  color: #54799a;
+  margin: 30px 0 10px;
+}
+.day-page > .back-to-house {
+  margin-top: 3px;
 }
 .button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 44px;
-  padding: 12px 22px;
-  border: 1px solid #f1d79d;
-  border-radius: 6px;
-  background: #f1d79d;
-  color: #16395b;
+  gap: 10px;
+  min-height: 48px;
+  max-width: 100%;
+  padding: 13px 20px;
+  border: 1px solid #315e86;
+  border-radius: 4px;
+  background: #315e86;
+  color: #fff;
   font-size: 13px;
-  line-height: 1.4;
+  line-height: 1.5;
   margin: 14px 0;
+  touch-action: manipulation;
 }
 .notice-layer {
-  position: absolute;
+  position: fixed;
   inset: 0;
-  z-index: 8;
+  z-index: 40;
   display: grid;
-  align-items: center;
-  justify-items: center;
+  place-items: center;
   padding: 24px;
-  background: #092643ba;
+  overflow-y: auto;
+  background: #e9f3fce8;
   backdrop-filter: blur(5px);
 }
 .notice-card {
-  width: min(100%, 430px);
-  padding: 35px clamp(24px, 5vw, 40px) 24px;
-  border: 1px solid #6282a0;
-  border-radius: 16px;
-  background: #21476c;
+  position: relative;
+  width: min(100%, 390px);
+  max-height: calc(100svh - 48px);
+  overflow-y: auto;
+  padding: 36px 25px 22px;
+  border: 1px solid #7194b3;
+  border-radius: 70px 70px 4px 4px / 26px 26px 4px 4px;
+  background: #f4f8fc;
+  color: #315e86;
   text-align: center;
-  box-shadow: 0 24px 90px #04162b66;
+  box-shadow: 4px 5px 0 #d7e7f4;
 }
 .notice-symbol {
   display: block;
-  color: #f1d79d;
-  font-size: 38px;
-  margin-bottom: 20px;
+  color: #7194b3;
+  font-size: 36px;
+  margin-bottom: 16px;
 }
 .notice-card h2 {
-  font-size: 33px;
-  line-height: 1.15;
-  color: #edf3f9;
+  font-size: 30px;
+  line-height: 1.2;
+  color: #315e86;
+  text-wrap: balance;
 }
 .notice-copy {
   font-size: 14px;
   line-height: 1.85;
-  color: #d6e2ec;
-  margin: 22px 0 12px;
+  color: #456c8e;
+  margin: 20px 0 10px;
+}
+
+/* Two hinged shutters share a full-width face, preserving the illustrated window. */
+.door-leaf {
+  border: 0;
+  background: transparent;
+  transform: none;
+}
+.door-shutter {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  overflow: hidden;
+  backface-visibility: visible;
+  transform-style: preserve-3d;
+}
+.door-shutter--left {
+  left: 0;
+  transform-origin: left center;
+  border-radius: 48% 0 0 0 / 15% 0 0 0;
+}
+.door-shutter--right {
+  right: 0;
+  transform-origin: right center;
+  border-radius: 0 48% 0 0 / 0 15% 0 0;
+}
+.shutter-face {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 200%;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--ink);
+  border-radius: 48% 48% 0 0 / 15% 15% 0 0;
+  background: var(--paper);
+}
+.door-shutter--left .shutter-face {
+  left: 0;
+}
+.door-shutter--right .shutter-face {
+  right: 0;
+}
+.door-shutter--left::after {
+  content: '';
+  position: absolute;
+  top: 22%;
+  bottom: 8%;
+  right: 0;
+  width: 1px;
+  background: #7194b326;
+}
+.door-handle {
+  position: absolute;
+  top: 55%;
+  right: calc(50% - 9px);
+  width: 3px;
+  height: 5px;
+  border: 1px solid #7194b3;
+  border-radius: 2px;
+}
+.door-interior {
+  background: radial-gradient(ellipse, #fff9e9, #e4eaf4 80%);
+  box-shadow: inset 0 3px 14px #315e8620;
+}
+.door-heart {
+  font-family: Georgia, serif;
+  font-size: 30px;
+  color: #b48e55;
+}
+.door-sparkle {
+  position: absolute;
+  top: 20%;
+  right: 20%;
+  font-size: 12px;
+  color: #b48e55;
+}
+.house-scene {
+  background:
+    radial-gradient(circle at 1px 1px, #315e860b 1px, transparent 0) 0 0 / 7px
+      7px,
+    #f4f8fc;
+}
+.house-facade {
+  background:
+    linear-gradient(
+      90deg,
+      #dcebf733,
+      transparent 20%,
+      transparent 80%,
+      #dcebf733
+    ),
+    var(--paper);
+}
+.house-plaque {
+  position: relative;
+}
+.house-plaque::after {
+  content: '\2727  \2661  \2727';
+  display: block;
+  font-size: 13px;
+  letter-spacing: 9px;
+  margin: 14px 0 -8px;
+  color: #7194b3;
+}
+.house-door {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  scroll-margin-block: 100px;
+}
+.house-door--unlocked .shutter-face {
+  background: #d7e7f5;
+}
+.house-door--unlocked::after {
+  background: #d1ac6d;
+  box-shadow: 0 0 0 3px #d1ac6d1a;
+}
+.scene-caption {
+  padding-inline: 5px;
+}
+.scene-note {
+  max-width: 430px;
+}
+.calendar-progress {
+  padding: 8px 16px;
+  border: 1px solid #7194b340;
+  border-radius: 20px;
+  width: fit-content;
+  margin: 10px auto 0;
+  background: #e9f3fc80;
+}
+.door-journey {
+  overflow: clip;
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+}
+.journey-backdrop,
+.journey-wash {
+  position: absolute;
+  inset: 0;
+  background: #f4f8fc;
+}
+.journey-backdrop {
+  opacity: 0;
+}
+.journey-door {
+  position: absolute;
+  margin: 0;
+  z-index: 1;
+  transform-origin: center;
+  perspective: 800px;
+}
+.journey-door .door-interior {
+  background: radial-gradient(ellipse, #fff8df, #e9f3fc);
+}
+.journey-door .door-heart {
+  font-size: 28px;
+}
+.journey-caption {
+  position: absolute;
+  top: 77%;
+  left: 20px;
+  right: 20px;
+  text-align: center;
+  font:
+    italic 15px Georgia,
+    serif;
+  color: #54799a;
+  opacity: 0;
+}
+.journey-caption span {
+  display: block;
+  margin-top: 12px;
+  font-size: 22px;
+}
+.journey-wash {
+  z-index: 3;
+  opacity: 0;
+}
+.journey-stars {
+  position: absolute;
+  inset: -25%;
+  pointer-events: none;
+}
+.journey-stars i {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #d1ac6d;
+  clip-path: polygon(
+    50% 0,
+    60% 38%,
+    100% 50%,
+    60% 62%,
+    50% 100%,
+    40% 62%,
+    0 50%,
+    40% 38%
+  );
+  opacity: 0;
+}
+.journey-stars i:nth-child(1) {
+  left: 12%;
+  top: 20%;
+}
+.journey-stars i:nth-child(2) {
+  right: 5%;
+  top: 36%;
+}
+.journey-stars i:nth-child(3) {
+  left: 22%;
+  bottom: 10%;
+}
+.journey-stars i:nth-child(4) {
+  right: 18%;
+  bottom: 20%;
+}
+.journey-stars i:nth-child(5) {
+  left: 45%;
+  top: 0;
+}
+.journey-stars i:nth-child(6) {
+  right: 0;
+  top: 8%;
 }
 
 @media (min-width: 700px) {
@@ -699,39 +1040,289 @@ figcaption {
   }
 }
 @media (prefers-reduced-motion: no-preference) {
-  .door-leaf {
+  .door-shutter {
     transition:
-      transform 0.8s cubic-bezier(0.2, 0.65, 0.25, 1),
-      background 0.2s;
+      transform 0.65s cubic-bezier(0.2, 0.7, 0.2, 1),
+      filter 0.5s;
+  }
+  .shutter-face,
+  .choices button,
+  .button {
+    transition:
+      background 0.2s,
+      color 0.2s,
+      box-shadow 0.2s;
+  }
+  .house-door:active {
+    transform: translateY(1px);
+  }
+  .chimney-wisp {
+    animation: chimney-drift 4s ease-in-out infinite;
+  }
+  .tiny-star {
+    animation: little-twinkle 4s ease-in-out infinite;
+  }
+  .tiny-star:last-child {
+    animation-delay: -2s;
+  }
+  .is-selected:not(.is-opening) {
+    animation: found-your-door 0.65s ease-out;
   }
   .is-opening {
     z-index: 4;
   }
-  .is-opening .door-leaf {
-    transform: rotateY(-115deg);
+  .house-door.is-opening > .door-leaf .door-shutter--left {
+    transform: rotateY(-105deg);
+  }
+  .house-door.is-opening > .door-leaf .door-shutter--right {
+    transform: rotateY(105deg);
+  }
+  /* The duration comes from the same value as the authorized entrance timer. */
+  .journey-backdrop {
+    animation: journey-backdrop var(--door-duration) both;
+  }
+  .journey-door {
+    animation: door-travel var(--door-duration)
+      cubic-bezier(0.22, 0.68, 0.25, 1) both;
+  }
+  .journey-door .door-shutter--left {
+    animation: shutter-left var(--door-duration) both;
+  }
+  .journey-door .door-shutter--right {
+    animation: shutter-right var(--door-duration) both;
+  }
+  .journey-caption {
+    animation: journey-caption var(--door-duration) both;
+  }
+  .journey-wash {
+    animation: journey-wash var(--door-duration) both;
+  }
+  .journey-stars i {
+    animation: magic-spark var(--door-duration) both;
+  }
+  .journey-stars i:nth-child(even) {
+    animation-delay: 0.12s;
   }
   .inside-scene {
-    animation: enter-room 0.55s ease-out;
+    animation: room-arrival 0.55s ease-out both;
+  }
+  .room-heading {
+    animation: unfold-note 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  .blocks > * {
+    animation: unfold-note 0.65s ease-out both;
+  }
+  .blocks > :nth-child(1) {
+    animation-delay: 0.12s;
+  }
+  .blocks > :nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  .blocks > :nth-child(n + 3) {
+    animation-delay: 0.28s;
+  }
+  .quiz-feedback {
+    animation: unfold-note 0.3s ease-out both;
+  }
+  .letter-seal {
+    animation: seal-settle 0.9s ease-out both;
+  }
+  .notice-card {
+    animation: unfold-note 0.35s ease-out both;
+  }
+  .door-hint {
+    animation: hint-arrive 0.25s ease-out both;
+  }
+  .candle-flame {
+    transform-box: fill-box;
+    transform-origin: center bottom;
+    animation: candle-flicker 2.8s ease-in-out infinite alternate;
+  }
+  .room-fairy-lights {
+    animation: little-twinkle 4s ease-in-out infinite alternate;
   }
   @media (hover: hover) {
-    .house-door:hover .door-leaf {
+    .house-door:hover .shutter-face {
       background: #d7e8f6;
     }
-    .house-door--unlocked:hover .door-leaf {
-      transform: rotateY(-14deg);
+    .house-door--unlocked:hover .door-shutter--left {
+      transform: rotateY(-17deg);
     }
-    .house-door.is-opening:hover .door-leaf {
-      transform: rotateY(-115deg);
+    .house-door--unlocked:hover .door-shutter--right {
+      transform: rotateY(17deg);
+    }
+    .choices button:hover {
+      box-shadow: 0 0 0 2px #7194b333;
+    }
+    .button:hover {
+      background: #244d72;
     }
   }
-  @keyframes enter-room {
+  @keyframes door-travel {
+    0% {
+      transform: translate(0, 0) scale(1);
+    }
+    32%,
+    80% {
+      transform: translate(var(--travel-x), var(--travel-y))
+        scale(var(--travel-scale));
+      opacity: 1;
+    }
+    100% {
+      transform: translate(var(--travel-x), var(--travel-y))
+        scale(calc(var(--travel-scale) * 1.15));
+      opacity: 0;
+    }
+  }
+  @keyframes shutter-left {
+    0%,
+    25% {
+      transform: rotateY(0);
+      filter: brightness(1);
+    }
+    72%,
+    100% {
+      transform: rotateY(-112deg);
+      filter: brightness(0.91);
+    }
+  }
+  @keyframes shutter-right {
+    0%,
+    30% {
+      transform: rotateY(0);
+      filter: brightness(1);
+    }
+    78%,
+    100% {
+      transform: rotateY(112deg);
+      filter: brightness(0.91);
+    }
+  }
+  @keyframes journey-backdrop {
+    0% {
+      opacity: 0;
+    }
+    30%,
+    100% {
+      opacity: 0.94;
+    }
+  }
+  @keyframes journey-caption {
+    0%,
+    25% {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    45%,
+    78% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+  @keyframes journey-wash {
+    0%,
+    76% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  @keyframes magic-spark {
+    0%,
+    36% {
+      opacity: 0;
+      transform: translateY(8px) scale(0.2);
+    }
+    55% {
+      opacity: 0.9;
+      transform: translateY(0) scale(1);
+    }
+    90%,
+    100% {
+      opacity: 0;
+      transform: translateY(-15px) scale(0.4);
+    }
+  }
+  @keyframes room-arrival {
+    from {
+      opacity: 0.25;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes unfold-note {
     from {
       opacity: 0;
-      transform: translateY(8px);
+      transform: translateY(12px);
     }
     to {
       opacity: 1;
       transform: translateY(0);
+    }
+  }
+  @keyframes seal-settle {
+    from {
+      transform: rotate(-25deg) scale(0.85);
+    }
+    to {
+      transform: rotate(-10deg) scale(1);
+    }
+  }
+  @keyframes chimney-drift {
+    0% {
+      opacity: 0;
+      transform: translateY(5px);
+    }
+    35% {
+      opacity: 0.4;
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-12px);
+    }
+  }
+  @keyframes little-twinkle {
+    0%,
+    100% {
+      opacity: 0.55;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+  @keyframes candle-flicker {
+    0%,
+    100% {
+      transform: scale(0.94, 1) rotate(-3deg);
+    }
+    40% {
+      transform: scale(1, 0.9) rotate(3deg);
+    }
+    75% {
+      transform: scale(0.9, 1.04) rotate(-1deg);
+    }
+  }
+  @keyframes found-your-door {
+    from {
+      outline-color: transparent;
+    }
+    to {
+      outline-color: #315e86;
+    }
+  }
+  @keyframes hint-arrive {
+    from {
+      opacity: 0;
+      margin-bottom: -6px;
+    }
+    to {
+      opacity: 1;
+      margin-bottom: 0;
     }
   }
 }

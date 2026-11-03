@@ -1,5 +1,13 @@
-import { Children, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import {
+  Children,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+} from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { DOOR_OPEN_MS } from './motion';
 
 type Overview = { year: number; days: { day: number; available: boolean }[] };
 // A little finding game, like the doors on a physical Advent calendar.
@@ -46,17 +54,91 @@ function WindowIllustration({ variant }: { variant: number }) {
   );
 }
 
+function DoorFace({ day }: { day: number }) {
+  const face = (
+    <>
+      <span className="door-panel" />
+      {(day === 4 || day === 21) && (
+        <WindowIllustration variant={day === 4 ? 0 : 1} />
+      )}
+      <span className="door-number">{String(day).padStart(2, '0')}</span>
+      <span className="door-handle" />
+    </>
+  );
+  return (
+    <>
+      <span className="door-interior" aria-hidden="true">
+        <span className="door-heart">{'\u2661'}</span>
+        <span className="door-sparkle">{'\u2727'}</span>
+      </span>
+      <span className="door-leaf" aria-hidden="true">
+        <span className="door-shutter door-shutter--left">
+          <span className="shutter-face">{face}</span>
+        </span>
+        <span className="door-shutter door-shutter--right">
+          <span className="shutter-face">{face}</span>
+        </span>
+      </span>
+      <span className="door-sill" aria-hidden="true" />
+    </>
+  );
+}
+
 export function House({
   activeDay,
   opening = false,
   loading = false,
+  arriving = false,
   children,
 }: {
   activeDay?: number;
   opening?: boolean;
   loading?: boolean;
+  arriving?: boolean;
   children?: React.ReactNode;
 }) {
+  const houseRef = useRef<HTMLElement>(null);
+  const location = useLocation();
+  const [journey, setJourney] = useState<CSSProperties>();
+  const returnDay =
+    location.pathname === '/' ? location.state?.returnDay : undefined;
+  useLayoutEffect(() => {
+    const target = arriving ? activeDay : returnDay;
+    if (
+      typeof target !== 'number' ||
+      target < 1 ||
+      target > 24 ||
+      !Number.isInteger(target) ||
+      (arriving &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+    )
+      return;
+    houseRef.current
+      ?.querySelector<HTMLElement>(`[data-day="${target}"]`)
+      ?.scrollIntoView?.({ block: 'center', behavior: 'instant' });
+  }, [activeDay, arriving, returnDay]);
+  useLayoutEffect(() => {
+    if (!opening || !activeDay) return;
+    const door = houseRef.current?.querySelector<HTMLElement>(
+      `[data-day="${activeDay}"]`,
+    );
+    if (!door) return;
+    const rect = door.getBoundingClientRect();
+    const scale = Math.min(
+      2.6,
+      (window.innerWidth - 80) / Math.max(rect.width, 1),
+      (window.innerHeight * 0.5) / Math.max(rect.height, 1),
+    );
+    setJourney({
+      left: rect.left,
+      top: rect.top,
+      width: rect.width,
+      height: rect.height,
+      '--travel-x': `${window.innerWidth / 2 - rect.left - rect.width / 2}px`,
+      '--travel-y': `${window.innerHeight * 0.44 - rect.top - rect.height / 2}px`,
+      '--travel-scale': scale,
+    } as CSSProperties);
+  }, [opening, activeDay]);
   const [overview, setOverview] = useState<Overview>();
   const [failed, setFailed] = useState(false);
   const [hint, setHint] = useState<number>();
@@ -83,6 +165,7 @@ export function House({
   const hasNotice = Children.toArray(children).length > 0;
   return (
     <section
+      ref={houseRef}
       className={`house-scene${opening ? ' house-scene--opening' : ''}`}
       aria-label="Your Advent calendar house"
       aria-busy={loading}
@@ -102,6 +185,10 @@ export function House({
               aria-hidden="true"
             >
               <g stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round">
+                <path
+                  className="chimney-wisp"
+                  d="M335 14Q348 4 335 -7T335 -29"
+                />
                 <path d="M321 83V26H349V101" fill="#d5e6f5" />
                 <path d="M316 20H354V29H316Z" fill="#e9f3fc" />
                 <path d="M8 133 215 7 422 133Z" fill="#d5e6f5" />
@@ -135,28 +222,12 @@ export function House({
                       ? 'future'
                       : 'locked';
                   const className = `house-door house-door--${status}${activeDay === day ? ' is-selected' : ''}${isOpening ? ' is-opening' : ''}`;
-                  const face = (
-                    <>
-                      <span className="door-interior" aria-hidden="true">
-                        <span>✦</span>
-                      </span>
-                      <span className="door-leaf" aria-hidden="true">
-                        <span className="door-panel" />
-                        {(day === 4 || day === 21) && (
-                          <WindowIllustration variant={day === 4 ? 0 : 1} />
-                        )}
-                        <span className="door-number">
-                          {String(day).padStart(2, '0')}
-                        </span>
-                        <span className="door-handle" />
-                      </span>
-                      <span className="door-sill" aria-hidden="true" />
-                    </>
-                  );
+                  const face = <DoorFace day={day} />;
                   return entry ? (
                     <Link
                       key={day}
                       className={className}
+                      data-day={day}
                       to={`/day/${day}`}
                       aria-label={`December ${day}, ${entry.available ? 'unlocked. Open surprise' : 'opens later'}`}
                       aria-current={activeDay === day ? 'page' : undefined}
@@ -168,6 +239,7 @@ export function House({
                       key={day}
                       type="button"
                       className={className}
+                      data-day={day}
                       aria-label={`December ${day}, locked. Scan its QR code to unlock`}
                       onClick={() => setHint(day)}
                     >
@@ -228,6 +300,33 @@ export function House({
           </div>
         )}
       </div>
+      {opening && journey && activeDay && (
+        <div
+          className="door-journey"
+          aria-hidden="true"
+          style={{ '--door-duration': `${DOOR_OPEN_MS}ms` } as CSSProperties}
+        >
+          <div className="journey-backdrop" />
+          <div
+            className="journey-door house-door house-door--unlocked"
+            style={journey}
+          >
+            <DoorFace day={activeDay} />
+            <span className="journey-stars">
+              <i />
+              <i />
+              <i />
+              <i />
+              <i />
+              <i />
+            </span>
+          </div>
+          <p className="journey-caption">
+            a little magic, just for you <span>{'\u2661'}</span>
+          </p>
+          <div className="journey-wash" />
+        </div>
+      )}
       {children}
     </section>
   );

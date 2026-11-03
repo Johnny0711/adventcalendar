@@ -3,10 +3,11 @@ import { Link, Route, Routes, useParams } from 'react-router-dom';
 import type { DayContent } from '../server/content';
 import { House } from './House';
 import { ContentBlocks } from './ContentBlocks';
+import { RoomIllustration } from './RoomIllustration';
 
 // Both stages begin only after the server authorizes this day's content.
-export const DOOR_PAUSE_MS = 450;
-export const DOOR_OPEN_MS = 1150;
+import { DOOR_PAUSE_MS, DOOR_OPEN_MS } from './motion';
+export { DOOR_PAUSE_MS, DOOR_OPEN_MS } from './motion';
 type DayState = { status: number; content?: DayContent; year?: number };
 
 function ReturnHome({
@@ -14,8 +15,13 @@ function ReturnHome({
 }: {
   children?: React.ReactNode;
 }) {
+  const { day } = useParams();
   return (
-    <Link className="back-to-house" to="/">
+    <Link
+      className="back-to-house"
+      to="/"
+      state={day ? { returnDay: Number(day) } : undefined}
+    >
       <svg
         width="17"
         height="17"
@@ -119,20 +125,23 @@ function DayExperience({ day }: { day: string }) {
           <span>your little December</span>
         </div>
         <article className="day-page">
-          <div className="day-dateline">
-            <span />
-            DECEMBER {state.content.day}
-            <span />
+          <div className="room-heading">
+            <div className="day-dateline">
+              <span />
+              DECEMBER {state.content.day}
+              <span />
+            </div>
+            <div className="day-badge" aria-hidden="true">
+              {String(state.content.day).padStart(2, '0')}
+            </div>
+            <h1 ref={heading} tabIndex={-1}>
+              {state.content.title}
+            </h1>
+            <span className="content-star" aria-hidden="true">
+              ✧
+            </span>
+            <RoomIllustration />
           </div>
-          <div className="day-badge" aria-hidden="true">
-            {String(state.content.day).padStart(2, '0')}
-          </div>
-          <h1 ref={heading} tabIndex={-1}>
-            {state.content.title}
-          </h1>
-          <span className="content-star" aria-hidden="true">
-            ✧
-          </span>
           <ContentBlocks content={state.content} />
           <p className="signature">With love, always ♡</p>
           <ReturnHome>See all 24 doors</ReturnHome>
@@ -146,6 +155,7 @@ function DayExperience({ day }: { day: string }) {
     <House
       activeDay={validDay}
       opening={phase === 'opening'}
+      arriving={state.status === 200}
       loading={state.status === 0}
     >
       {state.status === 401 && (

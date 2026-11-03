@@ -9,6 +9,7 @@ function Quiz({
   const [choice, setChoice] = useState<number>();
   return (
     <section className="quiz">
+      <span className="quiz-eyebrow">a little question for you</span>
       <h2>{block.question}</h2>
       <div className="choices">
         {block.options.map((option, index) => (
@@ -23,7 +24,7 @@ function Quiz({
         ))}
       </div>
       {choice !== undefined && (
-        <p role="status">
+        <p className="quiz-feedback" role="status">
           {choice === block.answer
             ? `That’s the one! ♡ ${block.explanation}`
             : 'Another little guess?'}
@@ -50,7 +51,10 @@ export function ContentBlocks({ content }: { content: DayContent }) {
           case 'letter':
             return (
               <div className="letter" key={index}>
-                {block.content}
+                <span className="letter-seal" aria-hidden="true">
+                  {'\u2661'}
+                </span>
+                <div className="letter-copy">{block.content}</div>
               </div>
             );
           case 'image':
