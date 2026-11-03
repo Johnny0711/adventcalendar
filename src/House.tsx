@@ -171,11 +171,7 @@ export function House({
       aria-busy={loading}
     >
       <div className="house-view" inert={hasNotice}>
-        <div className="scene-caption" aria-hidden="true">
-          <span className="tiny-star">✧</span> a little december, just for you{' '}
-          <span className="tiny-star">✧</span>
-        </div>
-        <h1 className="sr-only">Your little house of December</h1>
+        <h1 className="scene-caption">Advent Calendar</h1>
         <div className="house-setting">
           <div className="calendar-house">
             <svg
@@ -202,10 +198,8 @@ export function House({
             </svg>
             <div className="house-facade">
               <div className="house-plaque">
-                <span className="plaque-eyebrow">
-                  a house full of little surprises
-                </span>
-                DECEMBER <span>twenty-four moments, just for you</span>
+                <span className="plaque-eyebrow">1–24 December</span>
+                DECEMBER <span>Advent Calendar</span>
               </div>
               <div
                 className="house-doors"
@@ -255,8 +249,8 @@ export function House({
                 <span>{'♡'}</span>
               </div>
               <div className="house-sign">
-                <span>christmas ♡</span>advent calendar
-                <small>24 little moments · one December</small>
+                <span>December</span>ADVENT CALENDAR
+                <small>1–24 December</small>
               </div>
             </div>
             <div className="house-step" aria-hidden="true" />
@@ -264,9 +258,9 @@ export function House({
         </div>
         <div className="scene-note" aria-live="polite">
           {loading ? (
-            <p>Finding your little door…</p>
+            <p>Loading calendar...</p>
           ) : opening ? (
-            <p>Door {activeDay} is opening. Come on in…</p>
+            <p>Opening door {activeDay}...</p>
           ) : failed ? (
             <p>
               We couldn’t check your opened doors.{' '}
@@ -279,10 +273,11 @@ export function House({
             </p>
           ) : (
             <>
-              <p>Scan a hidden QR code. Open a little magic.</p>
+              <p>
+                Scan the QR code behind each day's chocolate to open its door.
+              </p>
               <div className="calendar-progress">
-                <span className="lit-dot" />
-                {count} of 24 surprises unlocked
+                {count} of 24 doors unlocked
               </div>
             </>
           )}
@@ -312,18 +307,8 @@ export function House({
             style={journey}
           >
             <DoorFace day={activeDay} />
-            <span className="journey-stars">
-              <i />
-              <i />
-              <i />
-              <i />
-              <i />
-              <i />
-            </span>
           </div>
-          <p className="journey-caption">
-            a little magic, just for you <span>{'\u2661'}</span>
-          </p>
+          <p className="journey-caption">December {activeDay}</p>
           <div className="journey-wash" />
         </div>
       )}

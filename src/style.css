@@ -9,7 +9,7 @@
 :root {
   font-family: 'Trebuchet MS', Arial, sans-serif;
   color: #315e86;
-  background: #f4f8fc;
+  background: #101f35;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -443,10 +443,7 @@ h2 {
   color: #315e86;
   padding: max(14px, env(safe-area-inset-top)) 18px
     max(36px, env(safe-area-inset-bottom));
-  background:
-    radial-gradient(circle at 1px 1px, #315e860b 1px, transparent 0) 0 0 / 7px
-      7px,
-    #f4f8fc;
+  background: #101f35;
 }
 .inside-topbar {
   display: flex;
@@ -735,7 +732,7 @@ figcaption {
   place-items: center;
   padding: 24px;
   overflow-y: auto;
-  background: #e9f3fce8;
+  background: #101f35eb;
   backdrop-filter: blur(5px);
 }
 .notice-card {
@@ -847,10 +844,7 @@ figcaption {
   color: #b48e55;
 }
 .house-scene {
-  background:
-    radial-gradient(circle at 1px 1px, #315e860b 1px, transparent 0) 0 0 / 7px
-      7px,
-    #f4f8fc;
+  background: #101f35;
 }
 .house-facade {
   background:
@@ -866,14 +860,7 @@ figcaption {
 .house-plaque {
   position: relative;
 }
-.house-plaque::after {
-  content: '\2727  \2661  \2727';
-  display: block;
-  font-size: 13px;
-  letter-spacing: 9px;
-  margin: 14px 0 -8px;
-  color: #7194b3;
-}
+
 .house-door {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
@@ -1334,4 +1321,74 @@ figcaption {
     transition: none !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* Winter palette and restrained calendar typography. */
+.house-scene,
+.inside-scene,
+.journey-backdrop,
+.journey-wash {
+  background: #101f35;
+}
+.scene-caption {
+  color: #e3e8ef;
+  font-family: Georgia, serif;
+  font-style: normal;
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
+.scene-note {
+  color: #c4cedb;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.calendar-progress {
+  color: #aabbd0;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+}
+.house-plaque > span:not(.plaque-eyebrow) {
+  font-style: normal;
+  letter-spacing: 1.5px;
+  font-size: 14px;
+}
+.house-sign {
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 1px;
+  font-size: 11px;
+}
+.house-sign > span {
+  font-family: Georgia, serif;
+  font-size: 28px;
+  margin-bottom: 6px;
+}
+.house-door:nth-child(4n) .door-number {
+  font-style: normal;
+}
+.house-door:nth-child(5n) .door-number {
+  font-family: Georgia, serif;
+  font-size: 28px;
+  font-weight: 400;
+}
+.house-door--unlocked::after,
+.door-sparkle,
+.content-star,
+.notice-symbol {
+  display: none;
+}
+.inside-topbar > .back-to-house,
+.inside-topbar > span,
+.journey-caption {
+  color: #c4cedb;
+}
+.inside-topbar > span {
+  font-style: normal;
+}
+.inside-topbar a:focus-visible,
+.house-scene .text-button:focus-visible {
+  outline-color: #f1d79d;
 }

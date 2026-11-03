@@ -11,7 +11,7 @@ export { DOOR_PAUSE_MS, DOOR_OPEN_MS } from './motion';
 type DayState = { status: number; content?: DayContent; year?: number };
 
 function ReturnHome({
-  children = 'Back to the house',
+  children = 'Back to calendar',
 }: {
   children?: React.ReactNode;
 }) {
@@ -122,7 +122,7 @@ function DayExperience({ day }: { day: string }) {
       <div className="inside-scene">
         <div className="inside-topbar">
           <ReturnHome />
-          <span>your little December</span>
+          <span>Advent Calendar</span>
         </div>
         <article className="day-page">
           <div className="room-heading">
@@ -143,7 +143,6 @@ function DayExperience({ day }: { day: string }) {
             <RoomIllustration />
           </div>
           <ContentBlocks content={state.content} />
-          <p className="signature">With love, always ♡</p>
           <ReturnHome>See all 24 doors</ReturnHome>
         </article>
       </div>
@@ -159,7 +158,7 @@ function DayExperience({ day }: { day: string }) {
       loading={state.status === 0}
     >
       {state.status === 401 && (
-        <Notice symbol="◇" title="A little surprise, still wrapped.">
+        <Notice symbol="◇" title="Open this day with its QR code">
           <p>
             Scan the QR code behind this day’s chocolate to open door {validDay}
             .
@@ -167,7 +166,7 @@ function DayExperience({ day }: { day: string }) {
         </Notice>
       )}
       {state.status === 423 && (
-        <Notice symbol="☾" title="A little longer, a little magic.">
+        <Notice symbol="☾" title="This door opens in December">
           <p>
             Door {validDay} opens on December {validDay}, {state.year}. Your
             scan is remembered. Come back when the day arrives.
@@ -176,13 +175,11 @@ function DayExperience({ day }: { day: string }) {
       )}
       {(state.status === 400 || state.status === 404) && (
         <Notice symbol="✧" title="This door isn’t here.">
-          <p>
-            There are 24 little doors in this house. Let’s find your way back.
-          </p>
+          <p>Choose a day from 1 to 24 on the calendar.</p>
         </Notice>
       )}
       {![0, 200, 400, 401, 404, 423].includes(state.status) && (
-        <Notice symbol="♡" title="A little pause.">
+        <Notice symbol="♡" title="Unable to load this day">
           <p>
             We couldn’t load your surprise. Check your connection and try again.
           </p>
@@ -234,11 +231,8 @@ export function App() {
             path="*"
             element={
               <House>
-                <Notice symbol="✧" title="A little lost in the snow?">
-                  <p>
-                    This page isn’t part of your calendar. Your little house is
-                    just a step away.
-                  </p>
+                <Notice symbol="✧" title="Page not found">
+                  <p>This page is not part of your advent calendar.</p>
                 </Notice>
               </House>
             }

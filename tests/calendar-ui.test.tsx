@@ -133,8 +133,8 @@ describe('house calendar and protected door transitions', () => {
     expect(host.textContent).toContain(content.title);
   });
   for (const [status, expected] of [
-    [401, 'still wrapped'],
-    [423, 'A little longer'],
+    [401, 'Open this day with its QR code'],
+    [423, 'This door opens in December'],
     [404, 'This door isn’t here'],
   ] as const) {
     it(`never opens or reveals private content on a ${status} response`, async () => {
@@ -263,7 +263,7 @@ describe('house calendar and protected door transitions', () => {
     );
     await render('/day/1');
     await advance(5000);
-    expect(host.textContent).toContain('Finding your little door');
+    expect(host.textContent).toContain('Loading calendar');
     expect(host.querySelector('.is-opening')).toBeNull();
     await act(async () => {
       finish!({ ok: true, status: 200, json: async () => content });
@@ -282,7 +282,7 @@ describe('house calendar and protected door transitions', () => {
       return response(content);
     });
     await render('/day/1');
-    expect(host.textContent).toContain('A little pause');
+    expect(host.textContent).toContain('Unable to load this day');
     expect(host.querySelector('.is-opening')).toBeNull();
     await click('.notice-card .button');
     await advance(DOOR_PAUSE_MS + DOOR_OPEN_MS);
@@ -317,6 +317,6 @@ describe('house calendar and protected door transitions', () => {
         </MemoryRouter>,
       );
     });
-    expect(host.textContent).toContain('A little lost in the snow');
+    expect(host.textContent).toContain('Page not found');
   });
 });
