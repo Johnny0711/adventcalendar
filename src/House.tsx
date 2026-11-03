@@ -8,160 +8,39 @@ export const DOOR_ORDER = [
   23, 14,
 ];
 
-function Roof() {
+// Decorative line art never previews private day content.
+function WindowIllustration({ variant }: { variant: number }) {
   return (
     <svg
-      className="house-roof"
-      viewBox="0 0 900 250"
+      className="window-illustration"
+      viewBox="0 0 200 130"
       fill="none"
       aria-hidden="true"
     >
-      <path
-        d="M118 127V49H162V130"
-        fill="#476e9a"
-        stroke="#142f52"
-        strokeWidth="7"
-      />
-      <path
-        d="M112 48H168"
-        stroke="#e5eff5"
-        strokeWidth="14"
-        strokeLinecap="round"
-      />
-      <path
-        d="M22 227 182 79 310 195 450 21 590 195 718 79 878 227Z"
-        fill="#244d79"
-        stroke="#102b4f"
-        strokeWidth="8"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M46 221 182 98 310 213 450 42 590 213 718 98 854 221"
-        stroke="#5c7fa4"
-        strokeWidth="4"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M21 224 182 75 310 191 450 17 590 191 718 75 879 224"
-        stroke="#e3eef6"
-        strokeWidth="17"
+      <g
+        stroke="currentColor"
+        strokeWidth="1.3"
         strokeLinecap="round"
         strokeLinejoin="round"
-      />
-      <path
-        d="M184 124V193M166 145H202M718 124V193M700 145H736"
-        stroke="#6488ad"
-        strokeWidth="3"
-      />
-      <circle
-        cx="450"
-        cy="136"
-        r="32"
-        fill="#17365b"
-        stroke="#7897b5"
-        strokeWidth="4"
-      />
-      <path
-        d="M450 151 436 138C424 125 442 115 450 127 458 115 476 125 464 138Z"
-        fill="#f1d79d"
-      />
-      <path
-        d="M411 187H489"
-        stroke="#7795b3"
-        strokeWidth="3"
-        strokeLinecap="round"
-      />
-      <path
-        d="M27 231Q100 251 182 231T310 231Q380 253 450 231T590 231Q655 253 718 231T873 231"
-        stroke="#133d53"
-        strokeWidth="11"
-      />
-      {[
-        54, 105, 157, 211, 265, 322, 377, 430, 483, 538, 593, 647, 701, 754,
-        808, 859,
-      ].map((x, i) => (
-        <circle
-          key={x}
-          cx={x}
-          cy={i % 2 ? 240 : 236}
-          r="4"
-          fill="#f3d59b"
-          className="fairy-light"
-        />
-      ))}
-    </svg>
-  );
-}
-
-function Garden() {
-  return (
-    <svg
-      className="winter-garden"
-      viewBox="0 0 1100 630"
-      fill="none"
-      aria-hidden="true"
-    >
-      <path d="M0 589Q200 564 550 596T1100 582V630H0Z" fill="#dce9f3" />
-      <path d="M0 613Q310 581 570 615T1100 602V630H0Z" fill="#f1f6fa" />
-      <g fill="#214c68" stroke="#a4c6d9" strokeWidth="3" strokeLinejoin="round">
-        <path d="M68 353 34 417H51L18 478H39L3 547H133L97 478H118L84 417H102Z" />
-        <path d="M1034 309 996 386H1013L975 461H998L955 549H1110L1068 461H1090L1053 386H1071Z" />
-      </g>
-      <path
-        d="M68 353 43 400M34 450 22 474M1034 309 1009 361M991 432 978 458M971 518 958 545"
-        stroke="#e6f1f6"
-        strokeWidth="9"
-        strokeLinecap="round"
-      />
-      <path d="M68 548V586M1034 550V580" stroke="#b0c3d2" strokeWidth="9" />
-      <g stroke="#8aacc3" strokeWidth="3">
-        <path d="M145 530V578M170 525V575M195 530V575M140 545H200M900 545H960M907 530V578M932 525V575M957 530V575" />
-      </g>
-      <path
-        d="M157 586Q310 570 414 581M692 584Q820 570 932 587"
-        stroke="white"
-        strokeWidth="8"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-function NightSky() {
-  return (
-    <svg
-      className="night-sky"
-      viewBox="0 0 1440 1000"
-      preserveAspectRatio="xMidYMid slice"
-      fill="none"
-      aria-hidden="true"
-    >
-      <circle cx="1180" cy="155" r="33" fill="#ecedf0" opacity=".93" />
-      <circle cx="1195" cy="141" r="32" fill="#153b64" />
-      <g fill="#c9e0ee" opacity=".65">
-        {[
-          [133, 135],
-          [343, 79],
-          [601, 106],
-          [922, 82],
-          [1274, 338],
-          [105, 468],
-          [1317, 620],
-          [272, 700],
-          [1067, 749],
-          [792, 49],
-          [554, 846],
-          [1120, 427],
-          [370, 295],
-          [984, 269],
-          [85, 791],
-          [1351, 98],
-        ].map(([x, y]) => (
-          <circle key={`${x}-${y}`} cx={x} cy={y} r="2" />
-        ))}
-      </g>
-      <g stroke="#d8e9f3" strokeWidth="1.5" opacity=".7">
-        <path d="M235 216V230M228 223H242M1028 202V214M1022 208H1034M1245 489V505M1237 497H1253M155 618V630M149 624H161" />
+      >
+        <path d="M1 113 63 83H199M63 83V0M12 121H190M78 0V83" />
+        {variant === 0 ? (
+          <>
+            <ellipse cx="119" cy="85" rx="56" ry="12" />
+            <path d="M64 85V91Q119 115 175 91V85M79 98V126M161 98V126M113 99V121M30 96V61Q43 53 55 61V87M30 74H55M38 95V111M20 107V79H30" />
+            <path d="M100 77V59H115V77M97 60H118M106 59V44M132 83V64H143V83M129 64H146M137 64V51M88 81H94M149 85H158" />
+            <path d="M104 43Q97 34 106 29Q114 36 104 43ZM137 50Q129 42 137 36Q145 44 137 50Z" />
+            <ellipse cx="89" cy="85" rx="13" ry="4" />
+            <ellipse cx="149" cy="93" rx="11" ry="3" />
+            <path d="M85 8V38H119V8ZM90 13H114V32H90Z" />
+          </>
+        ) : (
+          <>
+            <path d="M19 107V79Q37 70 57 79V111M22 82 49 85V108M19 91 49 95M60 110 99 101V75L60 83ZM99 75 139 82V107L99 101M60 83 99 89 139 82M99 89V114M77 112V123M126 111V122" />
+            <path d="M156 102V72M147 72H166L160 52H153ZM149 103H164M163 23V45H188V23ZM169 29H182V39H169Z" />
+            <path d="M87 79V67H102V80M85 67H104M93 66Q88 56 95 51M111 82V76H123V83" />
+          </>
+        )}
       </g>
     </svg>
   );
@@ -209,19 +88,37 @@ export function House({
       aria-busy={loading}
     >
       <div className="house-view" inert={hasNotice}>
-        <NightSky />
         <div className="scene-caption" aria-hidden="true">
           <span className="tiny-star">✧</span> a little december, just for you{' '}
           <span className="tiny-star">✧</span>
         </div>
         <h1 className="sr-only">Your little house of December</h1>
         <div className="house-setting">
-          <Garden />
           <div className="calendar-house">
-            <Roof />
+            <svg
+              className="house-roof"
+              viewBox="0 0 430 145"
+              fill="none"
+              aria-hidden="true"
+            >
+              <g stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round">
+                <path d="M321 83V26H349V101" fill="#d5e6f5" />
+                <path d="M316 20H354V29H316Z" fill="#e9f3fc" />
+                <path d="M8 133 215 7 422 133Z" fill="#d5e6f5" />
+                <path d="M25 132 215 18 405 132M62 111H368M101 87H329M141 63H289" />
+                <path d="M113 111 133 87M169 111 179 87M261 111 251 87M317 111 297 87M177 63 184 39M253 63 246 39" />
+                <circle cx="215" cy="83" r="19" fill="#e9f3fc" />
+                <circle cx="215" cy="83" r="14" />
+                <path d="M215 69V97M201 83H229" />
+                <path d="M3 133H427V142H3Z" fill="#e9f3fc" />
+              </g>
+            </svg>
             <div className="house-facade">
               <div className="house-plaque">
-                DECEMBER <span>with love</span>
+                <span className="plaque-eyebrow">
+                  a house full of little surprises
+                </span>
+                DECEMBER <span>twenty-four moments, just for you</span>
               </div>
               <div
                 className="house-doors"
@@ -245,6 +142,9 @@ export function House({
                       </span>
                       <span className="door-leaf" aria-hidden="true">
                         <span className="door-panel" />
+                        {(day === 4 || day === 21) && (
+                          <WindowIllustration variant={day === 4 ? 0 : 1} />
+                        )}
                         <span className="door-number">
                           {String(day).padStart(2, '0')}
                         </span>
@@ -276,12 +176,15 @@ export function House({
                   );
                 })}
               </div>
-              <div className="house-base" aria-hidden="true">
-                <span />
-                <span className="house-sign">
-                  24 little moments · one December
-                </span>
-                <span />
+            </div>
+            <div className="shop-awning" aria-hidden="true" />
+            <div className="house-base" aria-hidden="true">
+              <div className="shop-entrance">
+                <span>{'♡'}</span>
+              </div>
+              <div className="house-sign">
+                <span>christmas ♡</span>advent calendar
+                <small>24 little moments · one December</small>
               </div>
             </div>
             <div className="house-step" aria-hidden="true" />
