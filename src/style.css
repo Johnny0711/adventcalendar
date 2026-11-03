@@ -77,8 +77,8 @@ h2 {
 
 /* A narrow, illustrated townhouse, designed to be explored on a phone. */
 .house-scene {
-  --ink: #315e86;
-  --paper: #e9f3fc;
+  --ink: #e8dcc8;
+  --paper: #713f43;
   position: relative;
   isolation: isolate;
   min-height: 100svh;
@@ -133,9 +133,9 @@ h2 {
   border: 1.5px solid var(--ink);
   box-shadow:
     inset 5px 0 0 var(--paper),
-    inset 6px 0 0 #315e8640,
+    inset 6px 0 0 #e8dcc840,
     inset -5px 0 0 var(--paper),
-    inset -6px 0 0 #315e8640;
+    inset -6px 0 0 #e8dcc840;
 }
 .house-plaque {
   margin: 0 0 25px;
@@ -266,8 +266,8 @@ h2 {
   border-radius: 50%;
 }
 .house-door--unlocked {
-  --paper: #ccdef0;
-  color: #204e78;
+  --paper: #805052;
+  color: var(--ink);
 }
 .house-door--unlocked::after {
   content: '';
@@ -281,15 +281,15 @@ h2 {
   pointer-events: none;
 }
 .house-door--future {
-  --paper: #e0edf8;
+  --paper: #60353b;
 }
 .is-selected {
-  outline: 2px solid #315e86;
+  outline: 2px solid #e8dcc8;
   outline-offset: 6px;
 }
 .house-scene button:focus-visible,
 .house-scene a:focus-visible {
-  outline: 3px solid #315e86;
+  outline: 3px solid #e8dcc8;
   outline-offset: 6px;
 }
 .shop-awning {
@@ -302,14 +302,14 @@ h2 {
   border-radius: 0 0 5px 5px;
   background: repeating-linear-gradient(
     90deg,
-    #bdd5eb 0,
-    #bdd5eb 5px,
-    #315e86 5px,
-    #315e86 6px,
-    #eef6fc 6px,
-    #eef6fc 11px,
-    #315e86 11px,
-    #315e86 12px
+    #60353b 0,
+    #60353b 5px,
+    #b99b8d 5px,
+    #b99b8d 6px,
+    #845257 6px,
+    #845257 11px,
+    #b99b8d 11px,
+    #b99b8d 12px
   );
 }
 .house-base {
@@ -816,7 +816,7 @@ figcaption {
   bottom: 8%;
   right: 0;
   width: 1px;
-  background: #7194b326;
+  background: #e8dcc826;
 }
 .door-handle {
   position: absolute;
@@ -824,7 +824,7 @@ figcaption {
   right: calc(50% - 9px);
   width: 3px;
   height: 5px;
-  border: 1px solid #7194b3;
+  border: 1px solid #e8dcc8;
   border-radius: 2px;
 }
 .door-interior {
@@ -847,15 +847,7 @@ figcaption {
   background: #101f35;
 }
 .house-facade {
-  background:
-    linear-gradient(
-      90deg,
-      #dcebf733,
-      transparent 20%,
-      transparent 80%,
-      #dcebf733
-    ),
-    var(--paper);
+  background: var(--paper);
 }
 .house-plaque {
   position: relative;
@@ -867,7 +859,7 @@ figcaption {
   scroll-margin-block: 100px;
 }
 .house-door--unlocked .shutter-face {
-  background: #d7e7f5;
+  background: #805052;
 }
 .house-door--unlocked::after {
   background: #d1ac6d;
@@ -1130,7 +1122,7 @@ figcaption {
   }
   @media (hover: hover) {
     .house-door:hover .shutter-face {
-      background: #d7e8f6;
+      background: #805052;
     }
     .house-door--unlocked:hover .door-shutter--left {
       transform: rotateY(-17deg);

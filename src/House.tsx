@@ -185,15 +185,15 @@ export function House({
                   className="chimney-wisp"
                   d="M335 14Q348 4 335 -7T335 -29"
                 />
-                <path d="M321 83V26H349V101" fill="#d5e6f5" />
-                <path d="M316 20H354V29H316Z" fill="#e9f3fc" />
-                <path d="M8 133 215 7 422 133Z" fill="#d5e6f5" />
+                <path d="M321 83V26H349V101" fill="#512e38" />
+                <path d="M316 20H354V29H316Z" fill="#713f43" />
+                <path d="M8 133 215 7 422 133Z" fill="#512e38" />
                 <path d="M25 132 215 18 405 132M62 111H368M101 87H329M141 63H289" />
                 <path d="M113 111 133 87M169 111 179 87M261 111 251 87M317 111 297 87M177 63 184 39M253 63 246 39" />
-                <circle cx="215" cy="83" r="19" fill="#e9f3fc" />
+                <circle cx="215" cy="83" r="19" fill="#713f43" />
                 <circle cx="215" cy="83" r="14" />
                 <path d="M215 69V97M201 83H229" />
-                <path d="M3 133H427V142H3Z" fill="#e9f3fc" />
+                <path d="M3 133H427V142H3Z" fill="#713f43" />
               </g>
             </svg>
             <div className="house-facade">
