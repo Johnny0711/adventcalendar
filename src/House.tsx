@@ -1,20 +1,83 @@
 import {
   Children,
+  lazy,
+  Suspense,
   useEffect,
   useLayoutEffect,
   useRef,
   useState,
+  useSyncExternalStore,
   type CSSProperties,
 } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { DOOR_OPEN_MS } from './motion';
 
 type Overview = { year: number; days: { day: number; available: boolean }[] };
-// A little finding game, like the doors on a physical Advent calendar.
-export const DOOR_ORDER = [
-  8, 16, 3, 12, 5, 21, 19, 2, 24, 7, 15, 10, 4, 13, 9, 20, 1, 17, 22, 6, 18, 11,
-  23, 14,
-];
+// Each entry gives the day, width in grid tracks, and optional height in rows.
+// A tall door carries over into the next line of the layout.
+const DOOR_LAYOUT = [
+  [
+    [6, 8],
+    [16, 4, 2],
+  ],
+  [
+    [3, 3],
+    [12, 5],
+  ],
+  [
+    [5, 3, 2],
+    [21, 5],
+    [2, 4],
+  ],
+  [
+    [13, 5],
+    [24, 4],
+  ],
+  [
+    [7, 4],
+    [15, 4],
+    [20, 4, 2],
+  ],
+  [
+    [19, 3],
+    [18, 5],
+  ],
+  [
+    [4, 5, 2],
+    [9, 3],
+    [10, 4],
+  ],
+  [
+    [14, 3],
+    [17, 4],
+  ],
+  [
+    [22, 3],
+    [8, 3, 2],
+    [11, 6],
+  ],
+  [
+    [23, 3],
+    [1, 6],
+  ],
+].flat();
+
+export const DOOR_ORDER = DOOR_LAYOUT.map(([day]) => day);
+
+const SPECIAL_DOORS = [1, 6, 13, 20];
+const Snowfall = lazy(() => import('react-snowfall'));
+
+const REDUCED_MOTION = '(prefers-reduced-motion: reduce)';
+
+function subscribeToMotionPreference(onChange: () => void) {
+  const preference = window.matchMedia(REDUCED_MOTION);
+  preference.addEventListener?.('change', onChange);
+  return () => preference.removeEventListener?.('change', onChange);
+}
+
+function prefersReducedMotion() {
+  return window.matchMedia(REDUCED_MOTION).matches;
+}
 
 // Decorative line art never previews private day content.
 function WindowIllustration({ variant }: { variant: number }) {
@@ -55,12 +118,15 @@ function WindowIllustration({ variant }: { variant: number }) {
 }
 
 function DoorFace({ day }: { day: number }) {
+  const specialIndex = SPECIAL_DOORS.indexOf(day);
+  const isSpecial = specialIndex >= 0;
+  const shutterClass = isSpecial
+    ? 'shutter-face shutter-face--special'
+    : 'shutter-face';
   const face = (
     <>
       <span className="door-panel" />
-      {(day === 4 || day === 21) && (
-        <WindowIllustration variant={day === 4 ? 0 : 1} />
-      )}
+      {isSpecial && <WindowIllustration variant={specialIndex % 2} />}
       <span className="door-number">{String(day).padStart(2, '0')}</span>
       <span className="door-handle" />
     </>
@@ -73,10 +139,10 @@ function DoorFace({ day }: { day: number }) {
       </span>
       <span className="door-leaf" aria-hidden="true">
         <span className="door-shutter door-shutter--left">
-          <span className="shutter-face">{face}</span>
+          <span className={shutterClass}>{face}</span>
         </span>
         <span className="door-shutter door-shutter--right">
-          <span className="shutter-face">{face}</span>
+          <span className={shutterClass}>{face}</span>
         </span>
       </span>
       <span className="door-sill" aria-hidden="true" />
@@ -98,6 +164,11 @@ export function House({
   children?: React.ReactNode;
 }) {
   const houseRef = useRef<HTMLElement>(null);
+  const reduceMotion = useSyncExternalStore(
+    subscribeToMotionPreference,
+    prefersReducedMotion,
+    () => true,
+  );
   const location = useLocation();
   const [journey, setJourney] = useState<CSSProperties>();
   const returnDay =
@@ -109,8 +180,7 @@ export function House({
       target < 1 ||
       target > 24 ||
       !Number.isInteger(target) ||
-      (arriving &&
-        window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+      (arriving && prefersReducedMotion())
     )
       return;
     houseRef.current
@@ -170,8 +240,28 @@ export function House({
       aria-label="Your Advent calendar house"
       aria-busy={loading}
     >
+      {!reduceMotion && (
+        <div className="house-snow" aria-hidden="true">
+          <Suspense fallback={null}>
+            <Snowfall
+              color="#c8ded9"
+              snowflakeCount={55}
+              opacity={[0.25, 0.65]}
+              radius={[0.6, 1.8]}
+              speed={[0.25, 0.8]}
+              wind={[-0.1, 0.25]}
+            />
+          </Suspense>
+        </div>
+      )}
       <div className="house-view" inert={hasNotice}>
-        <h1 className="scene-caption">Advent Calendar</h1>
+        <div className="scene-intro">
+          <p className="scene-season">1–24 December</p>
+          <h1 className="scene-caption">Advent Calendar</h1>
+          <p className="scene-guide">
+            Scan the QR code behind each day's chocolate to open its door.
+          </p>
+        </div>
         <div className="house-setting">
           <div className="calendar-house">
             <svg
@@ -185,28 +275,24 @@ export function House({
                   className="chimney-wisp"
                   d="M335 14Q348 4 335 -7T335 -29"
                 />
-                <path d="M321 83V26H349V101" fill="#512e38" />
-                <path d="M316 20H354V29H316Z" fill="#713f43" />
-                <path d="M8 133 215 7 422 133Z" fill="#512e38" />
+                <path d="M321 83V26H349V101" fill="var(--roof)" />
+                <path d="M316 20H354V29H316Z" fill="var(--trim)" />
+                <path d="M8 133 215 7 422 133Z" fill="var(--roof)" />
                 <path d="M25 132 215 18 405 132M62 111H368M101 87H329M141 63H289" />
                 <path d="M113 111 133 87M169 111 179 87M261 111 251 87M317 111 297 87M177 63 184 39M253 63 246 39" />
-                <circle cx="215" cy="83" r="19" fill="#713f43" />
+                <circle cx="215" cy="83" r="19" fill="var(--trim)" />
                 <circle cx="215" cy="83" r="14" />
                 <path d="M215 69V97M201 83H229" />
-                <path d="M3 133H427V142H3Z" fill="#713f43" />
+                <path d="M3 133H427V142H3Z" fill="var(--trim)" />
               </g>
             </svg>
             <div className="house-facade">
-              <div className="house-plaque">
-                <span className="plaque-eyebrow">1–24 December</span>
-                DECEMBER <span>Advent Calendar</span>
-              </div>
               <div
                 className="house-doors"
                 role="group"
                 aria-label="24 Advent calendar doors"
               >
-                {DOOR_ORDER.map((day) => {
+                {DOOR_LAYOUT.map(([day, columns, rows = 1]) => {
                   const entry = overview?.days.find((item) => item.day === day);
                   const isOpening = opening && activeDay === day;
                   const unlocked = entry?.available || isOpening;
@@ -217,11 +303,16 @@ export function House({
                       : 'locked';
                   const className = `house-door house-door--${status}${activeDay === day ? ' is-selected' : ''}${isOpening ? ' is-opening' : ''}`;
                   const face = <DoorFace day={day} />;
+                  const slot = {
+                    gridColumn: `span ${columns}`,
+                    gridRow: `span ${rows}`,
+                  };
                   return entry ? (
                     <Link
                       key={day}
                       className={className}
                       data-day={day}
+                      style={slot}
                       to={`/day/${day}`}
                       aria-label={`December ${day}, ${entry.available ? 'unlocked. Open surprise' : 'opens later'}`}
                       aria-current={activeDay === day ? 'page' : undefined}
@@ -234,6 +325,7 @@ export function House({
                       type="button"
                       className={className}
                       data-day={day}
+                      style={slot}
                       aria-label={`December ${day}, locked. Scan its QR code to unlock`}
                       onClick={() => setHint(day)}
                     >
@@ -249,8 +341,7 @@ export function House({
                 <span>{'♡'}</span>
               </div>
               <div className="house-sign">
-                <span>December</span>ADVENT CALENDAR
-                <small>1–24 December</small>
+                <span>December</span>
               </div>
             </div>
             <div className="house-step" aria-hidden="true" />
@@ -273,12 +364,13 @@ export function House({
             </p>
           ) : (
             <>
-              <p>
-                Scan the QR code behind each day's chocolate to open its door.
-              </p>
               <div className="calendar-progress">
-                {count} of 24 doors unlocked
+                <label htmlFor="door-progress">
+                  {count} of 24 doors unlocked
+                </label>
+                <progress id="door-progress" value={count} max={24} />
               </div>
+              <p className="scene-credit">© Made with love by Johnny</p>
             </>
           )}
         </div>

@@ -6,6 +6,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { App, DOOR_OPEN_MS, DOOR_PAUSE_MS } from '../src/App';
 import { DOOR_ORDER } from '../src/House';
 
+vi.mock('react-snowfall', () => ({ default: () => <canvas /> }));
+
 const content = {
   day: 1,
   title: 'A quiet winter letter',
@@ -88,6 +90,7 @@ describe('house calendar and protected door transitions', () => {
     );
     expect(host.querySelector('header')).toBeNull();
     expect(host.querySelector('.hero')).toBeNull();
+    expect(host.querySelector('.house-snow canvas')).not.toBeNull();
     expect(door(1)?.tagName).toBe('A');
     expect(door(2)?.classList.contains('house-door--future')).toBe(true);
     expect(door(3)?.tagName).toBe('BUTTON');
@@ -102,6 +105,13 @@ describe('house calendar and protected door transitions', () => {
     );
     await click('[aria-label="Dismiss door hint"]');
     expect(host.querySelector('.door-hint')).toBeNull();
+  });
+  it('illustrates only the four special doors', async () => {
+    await render();
+    const illustratedDays = DOOR_ORDER.filter((day) =>
+      door(day)?.querySelector('.window-illustration'),
+    );
+    expect(illustratedDays.sort((a, b) => a - b)).toEqual([1, 6, 13, 20]);
   });
   it('arrives at the house, opens only the authorized QR door, then reveals content', async () => {
     await render('/day/1');
@@ -190,6 +200,15 @@ describe('house calendar and protected door transitions', () => {
       else Reflect.deleteProperty(Element.prototype, 'scrollIntoView');
     }
   });
+  it('omits decorative snowfall when reduced motion is enabled', async () => {
+    vi.stubGlobal(
+      'matchMedia',
+      vi.fn(() => ({ matches: true })),
+    );
+    await render();
+    expect(host.querySelector('.house-snow')).toBeNull();
+    expect(host.querySelectorAll('.house-door')).toHaveLength(24);
+  });
   it('honors reduced motion by skipping the door and room animations', async () => {
     vi.stubGlobal(
       'matchMedia',
@@ -222,9 +241,15 @@ describe('house calendar and protected door transitions', () => {
         { type: 'text', content: 'A short note' },
         { type: 'letter', content: 'A letter' },
         { type: 'image', src: 'memory.webp', alt: 'A snowy morning' },
+        { type: 'image', src: 'ornament.png' },
         { type: 'video', src: 'hello.mp4', caption: 'Hello' },
         { type: 'audio', src: 'hello.mp3', caption: 'Listen' },
         { type: 'file', src: 'invite.pdf', label: 'An invitation' },
+        {
+          type: 'link',
+          url: 'https://example.com/playlist',
+          label: 'Open playlist',
+        },
         {
           type: 'quiz',
           question: 'Pick a star',
@@ -247,7 +272,21 @@ describe('house calendar and protected door transitions', () => {
     expect(host.querySelector('.blocks a')?.getAttribute('href')).toBe(
       '/api/media/1/invite.pdf',
     );
+    const externalLink = host.querySelector(
+      'a[href="https://example.com/playlist"]',
+    );
+    expect(externalLink?.textContent).toBe('Open playlist');
+    expect(externalLink?.getAttribute('target')).toBe('_blank');
     expect(host.querySelector('video')?.hasAttribute('playsinline')).toBe(true);
+    expect(
+      host.querySelector('img[src$="ornament.png"]')?.getAttribute('alt'),
+    ).toBe('');
+    expect(
+      host.querySelector('img[src$="ornament.png"] + figcaption'),
+    ).toBeNull();
+    expect(
+      host.querySelector('img[src$="memory.webp"] + figcaption')?.textContent,
+    ).toBe('A snowy morning');
     await click('.choices button');
     expect(host.textContent).toContain('A little light.');
   });

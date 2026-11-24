@@ -92,6 +92,7 @@ Edit `private/content/01.json` through `24.json`. Changes appear on the next req
     { "type": "video", "src": "message.mp4", "caption": "A small hello" },
     { "type": "audio", "src": "hello.mp3", "caption": "Press play" },
     { "type": "file", "src": "invitation.pdf", "label": "Your invitation" },
+    { "type": "link", "url": "https://example.com/playlist", "label": "Open the playlist" },
     {
       "type": "quiz",
       "question": "Choose a little treat",
@@ -105,7 +106,7 @@ Edit `private/content/01.json` through `24.json`. Changes appear on the next req
 
 Put corresponding files in `private/media/01/`. Repeat image blocks for a gallery. Allowed filenames contain ASCII letters, digits, `_` and `-`, with one lowercase extension: `webp`, `png`, `jpg`, `jpeg`, `gif`, `mp4`, `webm`, `mp3`, `m4a`, `ogg`, `wav`, `pdf`. No paths, URLs, HTML, SVG or executable files. Media must be explicitly referenced by that day's content. Directory realpaths are checked to reject symlink escapes. Only trusted operators may write private storage; do not change symlinks while requests run.
 
-Use WebP/JPEG at sensible mobile resolutions, MP4 with H.264/AAC for broad iPhone support, and compressed audio. Videos/audio use authenticated byte-range streaming and metadata preload. Images lazy-load. Provide good alt text. Quiz answers are delivered to an authorized browser along with the question; this is a personal interaction, not a cheat-resistant examination. Choices are local component state and are not saved or sent anywhere. No raw HTML or Markdown execution is supported.
+Use WebP/JPEG at sensible mobile resolutions, MP4 with H.264/AAC for broad iPhone support, and compressed audio. Videos/audio use authenticated byte-range streaming and metadata preload. Images lazy-load. The optional `alt` field supplies an image description and a visible caption. Omit it for decorative images. Quiz answers are delivered to an authorized browser along with the question; this is a personal interaction, not a cheat-resistant examination. Choices are local component state and are not saved or sent anywhere. No raw HTML or Markdown execution is supported.
 
 ## QR generation and printing
 

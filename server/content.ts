@@ -20,7 +20,7 @@ export const contentSchema = z
             .object({
               type: z.literal('image'),
               src: filename,
-              alt: z.string().min(1).max(500),
+              alt: z.string().min(1).max(500).optional(),
             })
             .strict(),
           z
@@ -41,6 +41,13 @@ export const contentSchema = z
             .object({
               type: z.literal('file'),
               src: filename,
+              label: z.string().min(1).max(200),
+            })
+            .strict(),
+          z
+            .object({
+              type: z.literal('link'),
+              url: z.url({ protocol: /^https?$/ }).max(2048),
               label: z.string().min(1).max(200),
             })
             .strict(),

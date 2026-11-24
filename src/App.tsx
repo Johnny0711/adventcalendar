@@ -126,20 +126,12 @@ function DayExperience({ day }: { day: string }) {
         </div>
         <article className="day-page">
           <div className="room-heading">
-            <div className="day-dateline">
-              <span />
-              DECEMBER {state.content.day}
-              <span />
+            <div className="room-title">
+              <p className="day-dateline">December {state.content.day}</p>
+              <h1 ref={heading} tabIndex={-1}>
+                {state.content.title}
+              </h1>
             </div>
-            <div className="day-badge" aria-hidden="true">
-              {String(state.content.day).padStart(2, '0')}
-            </div>
-            <h1 ref={heading} tabIndex={-1}>
-              {state.content.title}
-            </h1>
-            <span className="content-star" aria-hidden="true">
-              ✧
-            </span>
             <RoomIllustration />
           </div>
           <ContentBlocks content={state.content} />
@@ -168,8 +160,7 @@ function DayExperience({ day }: { day: string }) {
       {state.status === 423 && (
         <Notice symbol="☾" title="This door opens in December">
           <p>
-            Door {validDay} opens on December {validDay}, {state.year}. Your
-            scan is remembered. Come back when the day arrives.
+            Door {validDay} opens on December {validDay}, {state.year}.
           </p>
         </Notice>
       )}
@@ -180,9 +171,7 @@ function DayExperience({ day }: { day: string }) {
       )}
       {![0, 200, 400, 401, 404, 423].includes(state.status) && (
         <Notice symbol="♡" title="Unable to load this day">
-          <p>
-            We couldn’t load your surprise. Check your connection and try again.
-          </p>
+          <p>Check your connection and try again.</p>
           <button
             className="button"
             type="button"

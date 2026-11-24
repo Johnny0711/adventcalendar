@@ -60,8 +60,8 @@ export function ContentBlocks({ content }: { content: DayContent }) {
           case 'image':
             return (
               <figure key={index}>
-                <img src={url} alt={block.alt} loading="lazy" />
-                <figcaption>{block.alt}</figcaption>
+                <img src={url} alt={block.alt ?? ''} loading="lazy" />
+                {block.alt && <figcaption>{block.alt}</figcaption>}
               </figure>
             );
           case 'video':
@@ -93,6 +93,18 @@ export function ContentBlocks({ content }: { content: DayContent }) {
             return (
               <a className="button" key={index} href={url}>
                 {block.label} ↓
+              </a>
+            );
+          case 'link':
+            return (
+              <a
+                className="button"
+                key={index}
+                href={block.url}
+                target="_blank"
+                rel="noreferrer"
+              >
+                {block.label}
               </a>
             );
           case 'quiz':
