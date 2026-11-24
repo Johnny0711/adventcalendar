@@ -1,24 +1,49 @@
-# A little December magic
+# Advent Calendar
 
-A private, mobile-first Advent calendar for 24 printed chocolate-door QR codes. React, TypeScript, Vite, Tailwind, React Router, Fastify, and SQLite run from one application container. No accounts, cloud services, analytics, external fonts, or public private-media directory.
+A personal Advent calendar that pairs 24 physical surprises with 24 digital ones. Scan the QR code behind a chocolate to open its numbered door in the illustrated house. Each door can hold a note, photos, videos, audio, a quiz, a downloadable file, or an external link.
 
-The calendar opens directly onto an illustrated blue winter house with 24 numbered doors. A successful QR scan still redirects to the clean `/day/:day` route: the frontend first shows the whole house, waits for server authorization, opens that specific door, then enters the day's content. Previously unlocked doors glow and can be revisited from the house. Each content page has “Back to the house” navigation. Locked/future/invalid states appear over the house without opening a door or displaying private content. Reduced-motion preferences skip the animation and enter authorized content immediately. All illustration assets are local SVG/CSS; no external design service is required at runtime.
+The calendar remembers unlocked doors in the recipient's browser through a session cookie. Visitors can see the house and door numbers. Each day's content requires its QR code or the secret URL encoded in it. Optional date locking makes that content available from the corresponding day in December. The house has gentle snowfall and animated shutters, both of which respect reduced-motion preferences.
+
+- [Run it locally](#quick-start)
+- [Use the calendar](#use-the-calendar)
+- [Add notes, photos, videos, and links](#write-the-surprises)
+- [Print the QR codes](#qr-generation-and-printing)
+- [Deploy with Docker](#ubuntu-docker-deployment)
+- [Update an existing deployment](#updating-an-existing-server-deployment)
+
+**Already printed your QR codes?** Keep the same public hostname, SQLite database, and credential vault. Use the existing deployment's update workflow for code changes.
 
 ## Quick start
 
-Use Node.js 24 LTS and npm. From this directory:
+Install Node.js 24 or newer and npm. Run these commands from the repository root for a new local calendar. On Windows, use PowerShell.
 
-```sh
+```powershell
 npm ci
-cp .env.example .env
+if (-not (Test-Path -LiteralPath .env)) { Copy-Item .env.example .env }
 npm run db:init
 npm run qr:generate
 npm run dev
 ```
 
-Open `http://localhost:5173`. Open `generated-private/printable/index.html` locally and scan a code, or use a URL from `generated-private/qr-links.json`. A phone cannot reach your computer's `localhost`: for LAN testing, use an appropriate LAN origin and run Vite with `npm run dev:client -- --host 0.0.0.0` alongside `npm run dev:server`. The API is proxied through Vite. Development cookies are intentionally HTTP-compatible. Never expose the development servers publicly. Production enforces HTTPS origins and Secure cookies.
+On macOS or Linux:
 
-Initialization copies 24 editable placeholders into `private/content` only where no file exists. It creates media directories and keys for missing days. It never rotates an existing or revoked key. Run management commands one at a time. The server does not automatically create QR secrets on startup; initialize before opening the calendar.
+```sh
+npm ci
+test -f .env || cp .env.example .env
+npm run db:init
+npm run qr:generate
+npm run dev
+```
+
+Open `http://localhost:5173`. Initialization creates the SQLite database, placeholders in `private/content/`, per-day media folders, and keys for missing days. It preserves existing content and keys. QR generation creates the printable sheet, individual images, and a JSON list of secret URLs in `generated-private/`.
+
+## Use the calendar
+
+1. On the computer running the app, open `generated-private/qr-links.json` locally and paste a day's URL into your browser. This tests the same unlock and animation as a QR scan.
+2. On a phone, scan the day's code from the printed sheet. The code must use an origin the phone can reach. For local network testing, set `PUBLIC_ORIGIN` to your computer's LAN address and Vite port, start `npm run dev:server` and `npm run dev:client -- --host 0.0.0.0`, and generate a sheet for that local test setup.
+3. Return to the house and tap an unlocked door to revisit its surprise. A new browser profile or a browser with cleared site cookies needs its own scan.
+
+Treat the generated URLs and QR images like keys. Anyone with a copy can unlock the corresponding door in their own browser. For a publicly reachable calendar, use the HTTPS Docker deployment below.
 
 ## Commands
 
@@ -79,7 +104,9 @@ Session expiry is absolute, not sliding. Adjust it when reusing the app for a la
 
 ## Write the surprises
 
-Edit `private/content/01.json` through `24.json`. Changes appear on the next request; no database migration or rebuild is needed. The server strictly validates JSON before delivery. UTF-8 with or without BOM is supported. Example:
+Each door has a JSON file under `private/content/` and a matching media folder. For Day 1, edit `private/content/01.json` and put photos or videos in `private/media/01/`. Keep the `day` number aligned with the filename. Items in `blocks` appear in the listed order. Reopen the door after saving to see your changes.
+
+This Day 1 example shows each supported block type.
 
 ```json
 {
@@ -92,7 +119,11 @@ Edit `private/content/01.json` through `24.json`. Changes appear on the next req
     { "type": "video", "src": "message.mp4", "caption": "A small hello" },
     { "type": "audio", "src": "hello.mp3", "caption": "Press play" },
     { "type": "file", "src": "invitation.pdf", "label": "Your invitation" },
-    { "type": "link", "url": "https://example.com/playlist", "label": "Open the playlist" },
+    {
+      "type": "link",
+      "url": "https://example.com/playlist",
+      "label": "Open the playlist"
+    },
     {
       "type": "quiz",
       "question": "Choose a little treat",
