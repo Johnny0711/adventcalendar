@@ -243,6 +243,15 @@ describe('house calendar and protected door transitions', () => {
         { type: 'image', src: 'memory.webp', alt: 'A snowy morning' },
         { type: 'image', src: 'ornament.png' },
         { type: 'video', src: 'hello.mp4', caption: 'Hello' },
+        {
+          type: 'coupon',
+          title: 'A date night',
+          description: 'Dinner is on me.',
+          color: '#a85c70',
+          icon: '♥',
+          src: 'date.jpg',
+          alt: 'Our favorite restaurant',
+        },
         { type: 'audio', src: 'hello.mp3', caption: 'Listen' },
         { type: 'file', src: 'invite.pdf', label: 'An invitation' },
         {
@@ -278,6 +287,14 @@ describe('house calendar and protected door transitions', () => {
     expect(externalLink?.textContent).toBe('Open playlist');
     expect(externalLink?.getAttribute('target')).toBe('_blank');
     expect(host.querySelector('video')?.hasAttribute('playsinline')).toBe(true);
+    const coupon = host.querySelector<HTMLElement>('.coupon');
+    expect(coupon?.querySelector('h2')?.textContent).toBe('A date night');
+    expect(coupon?.textContent).toContain('♥');
+    expect(coupon?.textContent).toContain('Dinner is on me.');
+    expect(coupon?.style.getPropertyValue('--coupon-accent')).toBe('#a85c70');
+    expect(coupon?.querySelector('img')?.getAttribute('alt')).toBe(
+      'Our favorite restaurant',
+    );
     expect(
       host.querySelector('img[src$="ornament.png"]')?.getAttribute('alt'),
     ).toBe('');
@@ -289,6 +306,105 @@ describe('house calendar and protected door transitions', () => {
     ).toBe('A snowy morning');
     await click('.choices button');
     expect(host.textContent).toContain('A little light.');
+  });
+  it('downloads a PNG voucher with the stub on the left and its photo', async () => {
+    fetchMock.mockImplementation((url: string) =>
+      url === '/api/unlocked'
+        ? response(overview)
+        : response({
+            ...content,
+            blocks: [{ type: 'coupon', title: 'A massage', src: 'gift.jpg' }],
+          }),
+    );
+    vi.stubGlobal(
+      'matchMedia',
+      vi.fn(() => ({ matches: true })),
+    );
+    const createObjectURL = vi.fn<(file: Blob) => string>(
+      () => 'blob:gift-voucher',
+    );
+    const revokeObjectURL = vi.fn();
+    vi.stubGlobal(
+      'URL',
+      class extends URL {
+        static createObjectURL = createObjectURL;
+        static revokeObjectURL = revokeObjectURL;
+      },
+    );
+    const photo = {
+      decode: vi.fn().mockResolvedValue(undefined),
+      naturalWidth: 400,
+      naturalHeight: 300,
+      src: '',
+    };
+    vi.stubGlobal(
+      'Image',
+      class {
+        constructor() {
+          return photo;
+        }
+      },
+    );
+    const ctx = {
+      measureText: (value: string) => ({ width: value.length * 20 }),
+      beginPath: vi.fn(),
+      roundRect: vi.fn(),
+      clip: vi.fn(),
+      fillRect: vi.fn(),
+      setLineDash: vi.fn(),
+      moveTo: vi.fn(),
+      lineTo: vi.fn(),
+      stroke: vi.fn(),
+      fillText: vi.fn(),
+      save: vi.fn(),
+      drawImage: vi.fn(),
+      restore: vi.fn(),
+      arc: vi.fn(),
+      fill: vi.fn(),
+    };
+    const context = vi
+      .spyOn(HTMLCanvasElement.prototype, 'getContext')
+      .mockReturnValue(ctx as unknown as CanvasRenderingContext2D);
+    const encode = vi
+      .spyOn(HTMLCanvasElement.prototype, 'toBlob')
+      .mockImplementation((callback, type) => callback(new Blob([], { type })));
+    const download = vi
+      .spyOn(HTMLAnchorElement.prototype, 'click')
+      .mockImplementation(function (this: HTMLAnchorElement) {
+        expect(this.download).toBe('voucher-day-01-1.png');
+      });
+    try {
+      await render('/day/1');
+      expect(host.querySelector('.coupon')?.firstElementChild?.className).toBe(
+        'coupon-stub',
+      );
+      await click('.coupon .coupon-save');
+      expect(download).toHaveBeenCalledOnce();
+      expect(createObjectURL.mock.calls[0]?.[0].type).toBe('image/png');
+      expect(ctx.fillText).toHaveBeenCalledWith(
+        'A massage',
+        expect.any(Number),
+        expect.any(Number),
+      );
+      expect(photo.src).toBe('/api/media/1/gift.jpg');
+      expect(ctx.drawImage).toHaveBeenCalledWith(
+        photo,
+        50,
+        0,
+        300,
+        300,
+        expect.any(Number),
+        expect.any(Number),
+        254,
+        254,
+      );
+      await advance(1000);
+      expect(revokeObjectURL).toHaveBeenCalledWith('blob:gift-voucher');
+    } finally {
+      download.mockRestore();
+      context.mockRestore();
+      encode.mockRestore();
+    }
   });
   it('keeps the house visible during a slow protected request and does not open early', async () => {
     let finish:

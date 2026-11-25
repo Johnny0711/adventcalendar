@@ -81,6 +81,15 @@ This Day 1 example shows each supported block type.
     { "type": "audio", "src": "hello.mp3", "caption": "Press play" },
     { "type": "file", "src": "invitation.pdf", "label": "Your invitation" },
     {
+      "type": "coupon",
+      "title": "A date night of your choice",
+      "description": "Pick the evening. I'll plan the rest.",
+      "color": "#a85c70",
+      "icon": "♥",
+      "src": "date-night.jpg",
+      "alt": "Our favorite restaurant"
+    },
+    {
       "type": "link",
       "url": "https://example.com/playlist",
       "label": "Open the playlist"
@@ -99,6 +108,10 @@ This Day 1 example shows each supported block type.
 Put corresponding files in `private/media/01/`. Repeat image blocks for a gallery. Allowed filenames contain ASCII letters, digits, `_` and `-`, with one lowercase extension: `webp`, `png`, `jpg`, `jpeg`, `gif`, `mp4`, `webm`, `mp3`, `m4a`, `ogg`, `wav`, `pdf`. No paths, URLs, HTML, SVG or executable files. Media must be explicitly referenced by that day's content. Directory realpaths are checked to reject symlink escapes. Only trusted operators may write private storage; do not change symlinks while requests run.
 
 Use WebP/JPEG at sensible mobile resolutions, MP4 with H.264/AAC for broad iPhone support, and compressed audio. Videos/audio use authenticated byte-range streaming and metadata preload. Images lazy-load. The optional `alt` field supplies an image description and a visible caption. Omit it for decorative images. Quiz answers are delivered to an authorized browser along with the question; this is a personal interaction, not a cheat-resistant examination. Choices are local component state and are not saved or sent anywhere. No raw HTML or Markdown execution is supported.
+
+A coupon needs only a `title`. Add a `description`, a six-digit hex accent `color`, an emoji or short symbol in `icon`, or a local image filename in `src`. Put the image in the same day's media folder. Add `alt` to describe the coupon photo for screen readers.
+
+The recipient can use **Save voucher** to download a PNG of the ticket with its photo included. They can open it offline later and show or print it to redeem in person.
 
 ## QR generation and printing
 

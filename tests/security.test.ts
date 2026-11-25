@@ -59,6 +59,30 @@ describe('capability authentication and private resources', () => {
       headers: session ? { cookie: session } : {},
     });
   }
+  it('serves a coupon photo only after unlocking its door', async () => {
+    const coupon = { type: 'coupon', title: 'Date night', src: 'date.jpg' };
+    const day = { day: 1, title: 'Private title', blocks: [coupon] };
+    await writeFile(path.join(root, 'content', '01.json'), JSON.stringify(day));
+    await writeFile(path.join(root, 'media', '01', 'date.jpg'), 'coupon-photo');
+
+    const url = '/api/media/1/date.jpg';
+    expect((await app.inject(url)).statusCode).toBe(401);
+    const headers = { cookie: cookie(await scan()) };
+    const response = await app.inject({ url, headers });
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toBe('coupon-photo');
+
+    for (const invalid of [
+      { src: '../date.jpg' },
+      { src: 'date.pdf' },
+      { color: 'red' },
+    ]) {
+      expect(
+        contentSchema.safeParse({ ...day, blocks: [{ ...coupon, ...invalid }] })
+          .success,
+      ).toBe(false);
+    }
+  });
   it('valid QR redirects without rendering secrets, creates an opaque HTTP-only cookie', async () => {
     const r = await scan();
     expect(r.statusCode).toBe(303);

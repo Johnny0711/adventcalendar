@@ -1,6 +1,6 @@
 # Advent Calendar
 
-A private Advent calendar for 24 physical surprises. Each chocolate can hide a QR code that opens a door in an illustrated winter house. Inside, share a note, photo, video, audio clip, quiz, file, or link.
+A private Advent calendar for 24 physical surprises. Each chocolate can hide a QR code that opens a door in an illustrated winter house. Inside, share a note, photo, video, audio clip, voucher, quiz, file, or link.
 
 ```mermaid
 flowchart LR

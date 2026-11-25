@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { DayContent } from '../server/content';
+import { Coupon } from './Coupon';
 
 function Quiz({
   block,
@@ -38,7 +39,7 @@ export function ContentBlocks({ content }: { content: DayContent }) {
     <div className="blocks">
       {content.blocks.map((block, index) => {
         const url =
-          'src' in block
+          'src' in block && block.src
             ? `/api/media/${content.day}/${encodeURIComponent(block.src)}`
             : '';
         switch (block.type) {
@@ -106,6 +107,16 @@ export function ContentBlocks({ content }: { content: DayContent }) {
               >
                 {block.label}
               </a>
+            );
+          case 'coupon':
+            return (
+              <Coupon
+                key={index}
+                block={block}
+                url={url}
+                day={content.day}
+                index={index}
+              />
             );
           case 'quiz':
             return <Quiz key={index} block={block} />;

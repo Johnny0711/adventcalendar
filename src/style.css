@@ -469,6 +469,156 @@ h2 {
 .message {
   white-space: pre-wrap;
 }
+.coupon {
+  --ticket-base: #302a28;
+  --ticket-ink: #efe2cf;
+  --ticket-muted: #cdbba6;
+  --ticket-rule: #746256;
+  --ticket-accent: var(--coupon-accent, #d7ad75);
+  --ticket-notch: clamp(12px, 3vw, 20px);
+  display: grid;
+  grid-template-columns: clamp(62px, 19%, 112px) minmax(0, 1fr);
+  min-block-size: clamp(180px, 29vw, 232px);
+  overflow: hidden;
+  border: 1px solid var(--ticket-rule);
+  border-radius: 18px;
+  corner-shape: squircle;
+  background: var(--ticket-base);
+  color: var(--ticket-ink);
+}
+.coupon-stub {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  padding: 10px;
+  background: color-mix(in srgb, var(--ticket-base) 63%, var(--ticket-accent));
+  background-image: linear-gradient(
+    to bottom,
+    transparent 3px,
+    var(--room-surface) 3px 12px,
+    transparent 12px
+  );
+  background-size: 3px 15px;
+  background-position: right center;
+  background-repeat: repeat-y;
+}
+.coupon-emblem {
+  display: grid;
+  place-items: center;
+  width: min(100%, 58px);
+  min-height: 44px;
+  aspect-ratio: 1;
+  padding: 4px;
+  border: 1px solid var(--ticket-muted);
+  border-radius: 28%;
+  corner-shape: squircle;
+  font-size: clamp(1.125rem, 4vw, 1.875rem);
+  line-height: 1;
+  text-align: center;
+}
+.coupon-stub::before,
+.coupon-stub::after {
+  content: '';
+  position: absolute;
+  inset-inline-end: calc(var(--ticket-notch) / -2 + 1px);
+  width: var(--ticket-notch);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--room-surface);
+  box-shadow: 0 0 0 1px var(--ticket-rule);
+}
+.coupon-stub::before {
+  inset-block-start: calc(var(--ticket-notch) / -2);
+}
+.coupon-stub::after {
+  inset-block-end: calc(var(--ticket-notch) / -2);
+}
+.coupon-main {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: clamp(10px, 3vw, 22px);
+  padding: clamp(14px, 4vw, 26px);
+}
+.blocks .coupon img {
+  width: 39%;
+  max-width: 200px;
+  aspect-ratio: 1;
+  padding: 4px;
+  border: 1px solid var(--ticket-rule);
+  border-radius: 12px;
+  corner-shape: squircle;
+  background: #211e1c;
+  object-fit: cover;
+}
+.coupon-copy {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  gap: 8px;
+  line-height: 1.5;
+}
+.coupon-label {
+  color: var(--ticket-muted);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.coupon h2 {
+  font-size: clamp(1.4rem, 4.5vw, 2.125rem);
+  line-height: 1.1;
+  text-wrap: balance;
+}
+.coupon-description {
+  white-space: pre-wrap;
+  color: var(--ticket-muted);
+}
+.coupon-save {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  justify-self: start;
+  margin-top: 8px;
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid #ebcd9e;
+  border-radius: 12px;
+  corner-shape: squircle;
+  color: #2d241b;
+  background: #dfbd8b;
+  font-size: 0.875rem;
+  font-weight: 650;
+  line-height: 1.2;
+  text-align: left;
+}
+.coupon-save svg {
+  flex: none;
+}
+@media (hover: hover) {
+  .coupon-save:hover:not(:disabled) {
+    background: #f0d3a8;
+  }
+}
+.coupon-save:active:not(:disabled) {
+  background: #cfa875;
+}
+.coupon-save:disabled {
+  cursor: progress;
+  opacity: 0.75;
+}
+@media (max-width: 440px) {
+  .coupon-main:has(img) {
+    display: grid;
+    align-content: center;
+  }
+  .blocks .coupon img {
+    width: 100%;
+    max-width: 200px;
+  }
+}
 .letter {
   position: relative;
   padding: 48px clamp(19px, 5vw, 32px) 27px;

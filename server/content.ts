@@ -53,6 +53,20 @@ export const contentSchema = z
             .strict(),
           z
             .object({
+              type: z.literal('coupon'),
+              title: z.string().min(1).max(200),
+              description: z.string().min(1).max(2000).optional(),
+              color: z
+                .string()
+                .regex(/^#[0-9a-f]{6}$/i)
+                .optional(),
+              icon: z.string().trim().min(1).max(32).optional(),
+              src: filename.regex(/\.(webp|png|jpg|jpeg|gif)$/).optional(),
+              alt: z.string().min(1).max(500).optional(),
+            })
+            .strict(),
+          z
+            .object({
               type: z.literal('quiz'),
               question: text,
               options: z.array(z.string().min(1).max(500)).min(2).max(8),
